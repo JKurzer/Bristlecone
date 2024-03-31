@@ -49,14 +49,12 @@ Using symmetric encryption as a token of successful authentication and authoriza
 **Q: Why handle endian-ness in this unusual way?**  
 A: Very few games are deployed to big-endian systems. These systems do not need the additional complexity of implied support, and many cannot support big-endian transparently due to exotic bit-manipulation or handwritten assembly. As a result, this saves considerable ambiguity that could lead to serious coding errors and allows the parsing of datagrams in a branchless fashion while avoiding transposition costs. It still fully supports multi-endian systems, just in an atypical way. Should this come up in practice, Hedra Group is open to amending the standard.
 
-**Q: Why use one port per schema?**
-
+**Q: Why use one port per schema?**  
 A1: This allows traffic to be separated using routing indirection without changes to client code. If your server architecture changes, and some component of your traffic needs to be handled by a new microservice, or if you switch to a monolithic design, separated datagram streams make this transparent to the client.
 
 A2: This allows significantly better separation of concerns, as a given stream can be handled completely by taking only the relevant schema as a dependency. It is awkward and undesirable to conflate parsing of different datagrams, both from a threading semantics standpoint and a practical standpoint.
 
-**Q: Why use end to end encryption, and why this way?**
-
+**Q: Why use end to end encryption, and why this way?**  
 A1: Bristlecone **does not use end to end encryption.** It explicitly requires no guarantee that the symmetric key not be provided to edge nodes for traffic inspection.
 
 A2: The combination of an IP source, valid port mappings, and correctly encrypted payload can serve as a connectionless attestation of session membership.
