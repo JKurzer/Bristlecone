@@ -55,7 +55,7 @@ A1: This allows traffic to be separated using routing indirection without change
 A2: This allows significantly better separation of concerns, as a given stream can be handled completely by taking only the relevant schema as a dependency. It is awkward and undesirable to conflate parsing of different datagrams, both from a threading semantics standpoint and a practical standpoint.
 
 **Q: Why use end to end encryption, and why this way?**  
-A1: Bristlecone **does not use end to end encryption.** It explicitly requires no guarantee that the symmetric key not be provided to edge nodes for traffic inspection.
+A1: Bristlecone **does guarantee end to end encryption.** It explicitly requires no guarantee that the symmetric key not be provided to edge nodes for traffic inspection.
 
 A2: The combination of an IP source, valid port mappings, and correctly encrypted payload can serve as a connectionless attestation of session membership.
 
