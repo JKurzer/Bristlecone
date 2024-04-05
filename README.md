@@ -9,11 +9,12 @@ The core definition of Bristlecone is simple:
 * Each Bristlecone datagram schema uses a unique port.
 * Bristlecone datagram schemas are statically sized. As a result, Bristlecone is recommended only for small schemas.
 * The recommended Bristlecone datagram sizes are 8, 16, 24, and 32 bytes.
-* Each complete Bristlecone packet contains only one datagram schema, but contain multiple datagrams.
+* Each complete Bristlecone packet contains only one datagram schema, **but** unusually contains multiple datagrams.
 * Each packet contains the current datagram and the previous two.
 * In other words, a Bristlecone packet is the current datagram, the previously transmitted datagram of that type, and the one before that.
-* This is commonly called windowing, so it can be said that a bristlecone packet has a window of three.
+* This is commonly called windowing, though that term is overloaded, so it could be said that a bristlecone packet has a window of three.
   * For the first & second packet's empty datagram slots, a zero fill may be used or a nonce supplied in the available space.
+  * However, the first and second packet must not be truncated to save bandwidth. Just... trust me on that. 
 * Each Bristlecone datagram is statically sized, so each bristlecone packet is statically sized.
 * These sizes must be inferrable at compile time.
   * As a result, conformant bristlecone implementations do not support variable length fields.
