@@ -49,6 +49,7 @@ Finally, we recommend that:
 * This negotiation process should transmit the port and schema mapping for the Bristlecone datagrams expected to be used.
 * This negotiation process should ensure schema compatibility.
 * Bristlecone is not intended to be used in a direct peer-to-peer capacity, as revealing client IP addresses to other clients is strongly advised against.
+* We add a single byte as a rolling count of the number of clone sets transmitted. This isn't part of the standard, but it is strongly recommended.
 
 Using symmetric encryption as a token of successful authentication and authorization means that packets which do not decrypt successfully can be rejected with no knowledge dependencies by edge nodes. Further, by allocating the same symmetric key to all clients that, for example, share a lobby in a multiplayer game, attestation of session membership is provided by the IP-Key pair. Only a compromise of both a valid IP and a live key can successfully allow a DoS to pass the edge, while clients in the same lobby can transparently decrypt packets from one another, allowing sophisticated edge reflection schemes.
 # Q&A
