@@ -24,7 +24,8 @@ The core definition of Bristlecone is simple:
 * Bristlecone transmits between 1 and 3 instances of each packet's payload, hence why we call them clones, depending on ECN.
 * The default is 2 clones per set, which we'll call a clone set.
 * These clone sets are transmitted as fast as possible, with the goal that all copies in a cloneset be in-flight simultaneously.
-  * In practice, adding a small delay may be useful, and as long as the delay is 1 millisecond or less, the desired outcome should be achieved.
+  * In practice, adding a small delay may be useful.
+  * We very strongly recommend that any added delays be one millisecond or less between clones in a set.
 * These clones use differing DSCP signifiers to help ensure differing transmission behaviors.
 
 Taken together, this allows Bristlecone to **instantaneously absorb packet loss without a variable retransmission scheme or a sliding window.** Bristlecone transparently tolerates packet disordering of up to three, allowing the fastest packet in any run of 3 clone sets to be used.
