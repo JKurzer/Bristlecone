@@ -4,21 +4,26 @@ Bristlecone is a simple game-centric protocol definition that significantly redu
 
 The core definition of Bristlecone is simple:
 
+**Building A Bristlecone Packet**
 * Bristlecone uses UDP over IPv4. A successor protocol will use either UDP over IPv6 or a raw IPv6 packet.
 * Each Bristlecone datagram schema uses a unique port.
 * Bristlecone datagram schemas are statically sized. As a result, Bristlecone is recommended only for small schemas.
 * The recommended Bristlecone datagram sizes are 8, 16, 24, and 32 bytes.
-* Each Bristlecone transmission contains only one datagram schema.
-* Each transmission contains the current datagram and the previous two.
-* For the first & second transmission, a zero fill may be used or a nonce supplied in the available space.
-* Each Bristlecone transmission is thus statically sized.
+* Each complete Bristlecone packet contains only one datagram schema, but contain multiple datagrams.
+* Each packet contains the current datagram and the previous two.
+* In other words, a Bristlecone packet is the current datagram, the previously transmitted datagram of that type, and the one before that.
+* This is commonly called windowing, so it can be said that a bristlecone packet has a window of three.
+  * For the first & second packet's empty datagram slots, a zero fill may be used or a nonce supplied in the available space.
+* Each Bristlecone datagram is statically sized, so each bristlecone packet is statically sized.
 * These sizes must be inferrable at compile time.
-  * As a result, conformant bristlecone implementations do not support true variable length fields.
+  * As a result, conformant bristlecone implementations do not support variable length fields.
   * In practice, we expect some users to require these, and support will be expanded over time.
-* A bristlecone transmission of 3 datagrams is called a clone.
-* Bristlecone transmits between 1 and 3 instances of each clone, depending on ECN.
-* The default is 2 clones per clone set.
+  * That time isn't today.
+* A bristlecone packet's payload of 3 datagrams is called a clone.
+* Bristlecone transmits between 1 and 3 instances of each packet's payload, hence why we call them clones, depending on ECN.
+* The default is 2 clones per set, which we'll call a clone set.
 * These clone sets are transmitted as fast as possible, with the goal that all copies in a cloneset be in-flight simultaneously.
+  * In practice, adding a small delay may be useful, and as long as the delay is 1 millisecond or less, the desired outcome should be achieved.
 * These clones use differing DSCP signifiers to help ensure differing transmission behaviors.
 
 Taken together, this allows Bristlecone to **instantaneously absorb packet loss without a variable retransmission scheme or a sliding window.** Bristlecone transparently tolerates packet disordering of up to three, allowing the fastest packet in any run of 3 clone sets to be used.
