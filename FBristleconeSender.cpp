@@ -100,6 +100,7 @@ void FBristleconeSender::Cleanup() {
 	// if (sender_socket_obj != nullptr) {
 	// 	socket_subsystem->DestroySocket(sender_socket_obj);
 	// }
+	sender_socket = nullptr;
 	const ISocketSubsystem* socket_subsystem_obj = socket_subsystem.Release();
 	if (socket_subsystem_obj != nullptr) {
 		socket_subsystem_obj = nullptr;

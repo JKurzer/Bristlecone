@@ -49,6 +49,7 @@ void UFBristleconeWorldSubsystem::Deinitialize() {
 	if (socket.IsValid()) {
 		socket.Get()->Close();
 	}
+	socket = nullptr;
 
 	FSocket* sender_socket_obj = socket.Get();
 	if (sender_socket_obj != nullptr) {
