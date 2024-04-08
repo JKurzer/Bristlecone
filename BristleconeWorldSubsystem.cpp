@@ -13,7 +13,7 @@ void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection
 }
 
 void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
-	if (const UWorld* World = InWorld.GetWorld()) {
+	if ([[maybe_unused]] const UWorld* World = InWorld.GetWorld()) {
 		UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: World beginning play"));
 
 		local_endpoint = FIPv4Endpoint(FIPv4Address::Any, DEFAULT_PORT);
