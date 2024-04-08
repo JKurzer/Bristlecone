@@ -11,10 +11,8 @@
 // TODO - Update to header_size + (data_packet * CLONE_COUNT)
 static constexpr int PACKET_SIZE = 2 * 1024 * 1024;
 static constexpr int DEFAULT_PORT = 40000;
+static constexpr uint16 MAX_TARGET_COUNT = 1;
 
-/**
- * 
- */
 UCLASS()
 class BRISTLECONEWORK_API UFBristleconeWorldSubsystem : public UTickableWorldSubsystem
 {
