@@ -1,6 +1,6 @@
 ﻿#include "FBristleconeSender.h"
 
-#include "FBristleconeWorldSubsystem.h"
+#include "UBristleconeWorldSubsystem.h"
 #include "Common/UdpSocketBuilder.h"
 
 FBristleconeSender::FBristleconeSender() : running(false) {

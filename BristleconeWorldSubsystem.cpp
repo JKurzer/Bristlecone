@@ -1,18 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "FBristleconeWorldSubsystem.h"
+#include "UBristleconeWorldSubsystem.h"
 
 #include "FBristleconeConstants.h"
 #include "Common/UdpSocketBuilder.h"
 
-void UFBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
+void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
 
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world initialized"));
 }
 
-void UFBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
+void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 	if (const UWorld* World = InWorld.GetWorld()) {
 		UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: World beginning play"));
 
@@ -36,7 +36,7 @@ void UFBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 	}
 }
 
-void UFBristleconeWorldSubsystem::Deinitialize() {
+void UBristleconeWorldSubsystem::Deinitialize() {
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Deinitializing Bristlecone subsystem"));
 	
 	if (sender_thread) {
@@ -59,11 +59,11 @@ void UFBristleconeWorldSubsystem::Deinitialize() {
 	Super::Deinitialize();
 }
 
-void UFBristleconeWorldSubsystem::Tick(float DeltaTime) {
+void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	//UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world ticked"));
 }
 
-TStatId UFBristleconeWorldSubsystem::GetStatId() const {
+TStatId UBristleconeWorldSubsystem::GetStatId() const {
 	RETURN_QUICK_DECLARE_CYCLE_STAT(UFBristleconeWorldSubsystem, STATGROUP_Tickables);
 }

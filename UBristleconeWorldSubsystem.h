@@ -6,7 +6,7 @@
 #include "FBristleconeReceiver.h"
 #include "FBristleconeSender.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "FBristleconeWorldSubsystem.generated.h"
+#include "UBristleconeWorldSubsystem.generated.h"
 
 // TODO - Update to header_size + (data_packet * CLONE_COUNT)
 static constexpr int PACKET_SIZE = 2 * 1024 * 1024;
@@ -14,7 +14,7 @@ static constexpr int DEFAULT_PORT = 40000;
 static constexpr uint16 MAX_TARGET_COUNT = 1;
 
 UCLASS()
-class BRISTLECONEWORK_API UFBristleconeWorldSubsystem : public UTickableWorldSubsystem
+class BRISTLECONEWORK_API UBristleconeWorldSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
 
