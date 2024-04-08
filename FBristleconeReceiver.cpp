@@ -20,14 +20,6 @@ bool FBristleconeReceiver::Init() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Receiver: Initializing Bristlecone receiver thread"));
 	socket_subsystem.Reset(ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM));
 
-	// local_endpoint = FIPv4Endpoint(FIPv4Address::Any, DEFAULT_PORT);
-	// receiver_socket.Reset(FUdpSocketBuilder(TEXT("Bristlecone.Receiver.Socket"))
-	// 				.AsNonBlocking()
-	// 				.AsReusable()
-	// 				.BoundToEndpoint(local_endpoint)
-	// 				.WithReceiveBufferSize(PACKET_SIZE)
-	// 				.Build());
-	
 	running = true;
 	return true;
 }
@@ -68,13 +60,6 @@ void FBristleconeReceiver::Stop() {
 }
 
 void FBristleconeReceiver::Cleanup() {
-	// if (receiver_socket != nullptr) {
-	// 	receiver_socket->Close();
-	// }
-	// FSocket* sender_socket_obj = receiver_socket.Release();
-	// if (sender_socket_obj != nullptr) {
-	// 	socket_subsystem->DestroySocket(sender_socket_obj);
-	// }
 	receiver_socket = nullptr;
 	const ISocketSubsystem* socket_subsystem_obj = socket_subsystem.Release();
 	if (socket_subsystem_obj != nullptr) {
