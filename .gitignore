@@ -1,3 +1,4 @@
 ﻿# ignoring some mock files was using to get this up and running
 /FBristleconeActor.cpp
 /FBristleconeActor.h
+/FBristleconeConstants.h
