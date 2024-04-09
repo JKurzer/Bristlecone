@@ -2,6 +2,7 @@
 
 #include "FControllerState.h"
 #include "SocketSubsystem.h"
+#include "UBristleconeWorldSubsystem.h"
 #include "Common/UdpSocketBuilder.h"
 
 FBristleconeReceiver::FBristleconeReceiver() : running(false) {
@@ -29,7 +30,7 @@ uint32 FBristleconeReceiver::Run() {
 	const TSharedRef<FInternetAddr> targetAddr = socket_subsystem->CreateInternetAddr();
 	
 	while (running && receiver_socket) {
-		FControllerState receiving_state;
+		FBristleconePacketContainer<FControllerState, 3> receiving_state;
 	
 		uint32 socket_data_size;
 		while (receiver_socket->HasPendingData(socket_data_size)) {
@@ -37,10 +38,10 @@ uint32 FBristleconeReceiver::Run() {
 			
 			received_data.SetNumUninitialized(FMath::Min(socket_data_size, 65507u));
 			receiver_socket->RecvFrom(received_data.GetData(), received_data.Num(), bytes_read, *targetAddr);
-	
-			receiving_state.clear();
-			memcpy(&receiving_state.controller_arr, received_data.GetData(), bytes_read);
-			UE_LOG(LogTemp, Warning, TEXT("Received %s in %d bytes from target"), *receiving_state.to_string(), bytes_read);
+			
+			memcpy(receiving_state.GetPacket(), received_data.GetData(), bytes_read);
+			FTimespan round_trip_time = FDateTime::Now() - receiving_state.GetTransferTime();
+			UE_LOG(LogTemp, Warning, TEXT("Received %s in %d bytes from target in %d milliseconds"), *receiving_state.GetPacket()->ToString(), bytes_read, round_trip_time.GetFractionMilli());
 		}
 
 		FPlatformProcess::Sleep(0.1f);

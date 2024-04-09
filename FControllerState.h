@@ -13,7 +13,7 @@ public:
 		memset(controller_arr, 0, sizeof(FControllerState));
 	}
 
-	FString to_string() const {
+	FString ToString() const {
 		return FString::Printf(TEXT("{ %d, %d, %d, %d }"), controller_arr[0], controller_arr[1], controller_arr[2], controller_arr[3]);
 	}
 };

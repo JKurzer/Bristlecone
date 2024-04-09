@@ -3,13 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FBristleconePacket.h"
 #include "FBristleconeReceiver.h"
 #include "FBristleconeSender.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "UBristleconeWorldSubsystem.generated.h"
 
-// TODO - Update to header_size + (data_packet * CLONE_COUNT)
-static constexpr int PACKET_SIZE = 2 * 1024 * 1024;
+typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
+
+static constexpr int CONTROLLER_STATE_PACKET_SIZE = sizeof(FControllerStatePacket);
 static constexpr int DEFAULT_PORT = 40000;
 static constexpr uint16 MAX_TARGET_COUNT = 1;
 
