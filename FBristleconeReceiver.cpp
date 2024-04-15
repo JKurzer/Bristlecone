@@ -44,7 +44,7 @@ uint32 FBristleconeReceiver::Run() {
 			UE_LOG(LogTemp, Warning, TEXT("Received %s in %d bytes from target in %d milliseconds"), *receiving_state.GetPacket()->ToString(), bytes_read, round_trip_time.GetFractionMilli());
 		}
 
-		FPlatformProcess::Sleep(0.1f);
+		FPlatformProcess::Sleep(SLEEP_TIME_BETWEEN_THREAD_TICKS);
 	}
 	
 	return 0;

@@ -3,7 +3,8 @@
 #include "UBristleconeWorldSubsystem.h"
 #include "Common/UdpSocketBuilder.h"
 
-FBristleconeSender::FBristleconeSender() : running(false) {
+FBristleconeSender::FBristleconeSender()
+: consecutive_zero_bytes_sent(0), running(false) {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Sender: Constructing Bristlecone Sender"));
 
 	target_endpoints.Reserve(MAX_TARGET_COUNT);
@@ -51,11 +52,17 @@ uint32 FBristleconeSender::Run() {
 														   bytes_sent, *endpoint.ToInternetAddr());
 			UE_LOG(LogTemp, Warning, TEXT("Sent message: %s : %s : Address - %s : BytesSent - %d"), *current_controller_state->ToString(),
 				   (packet_sent ? TEXT("true") : TEXT("false")), *endpoint.ToString(), bytes_sent);
+
+			if (bytes_sent == 0) {
+				consecutive_zero_bytes_sent++;
+			} else {
+				consecutive_zero_bytes_sent = 0;
+			}
 			
-			running = packet_sent && bytes_sent > 0;
+			running = packet_sent && consecutive_zero_bytes_sent < MAX_MIXED_CONSECUTIVE_PACKETS_ALLOWED;
 		}
 
-		FPlatformProcess::Sleep(0.1f);
+		FPlatformProcess::Sleep(SLEEP_TIME_BETWEEN_THREAD_TICKS);
 	}
 	
 	return 0;
