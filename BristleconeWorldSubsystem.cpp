@@ -21,8 +21,8 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.AsNonBlocking()
 						.AsReusable()
 						.BoundToEndpoint(local_endpoint)
-						.WithReceiveBufferSize(PACKET_SIZE)
-						.WithSendBufferSize(PACKET_SIZE)
+						.WithReceiveBufferSize(CONTROLLER_STATE_PACKET_SIZE)
+						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE)
 						.Build());
 		
 		// Start sender thread

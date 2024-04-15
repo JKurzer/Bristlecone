@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "FBristleconePacket.h"
 #include "FControllerState.h"
 #include "Interfaces/IPv4/IPv4Endpoint.h"
 
@@ -20,13 +21,10 @@ public:
 
 private:
 	void Cleanup();
+
+	FBristleconePacketContainer<FControllerState, 3> packet_container;
 	
-	uint32 clone_state_ring_index;
-	FControllerState clone_state_ring[CLONE_SIZE];
-	
-	//TUniquePtr<FSocket> sender_socket;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket;
-	//FIPv4Endpoint local_endpoint;
 	TArray<FIPv4Endpoint> target_endpoints;
 
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
