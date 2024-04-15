@@ -4,6 +4,7 @@
 #include "Interfaces/IPv4/IPv4Endpoint.h"
 
 static constexpr uint8 CLONE_SIZE = 3;
+static constexpr uint8 MAX_MIXED_CONSECUTIVE_PACKETS_ALLOWED = 100;
 
 class FBristleconeSender : public FRunnable {
 public:
@@ -28,6 +29,8 @@ private:
 	TArray<FIPv4Endpoint> target_endpoints;
 
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
+
+	uint8 consecutive_zero_bytes_sent;
 
 	bool running;
 };
