@@ -18,7 +18,7 @@
 		{
 			"Name": "Bristlecone",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PostEngineInit"
 		}
 	]
 }

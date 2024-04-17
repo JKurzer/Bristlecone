@@ -32,7 +32,7 @@ protected:
 
   private:
 	FIPv4Endpoint local_endpoint;
-	UBristleconeConstants ConfigVals;
+	TUniquePtr <UBristleconeConstants> ConfigVals;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socket;
 	
 	// Sender information

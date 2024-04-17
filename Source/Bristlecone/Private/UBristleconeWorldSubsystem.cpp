@@ -24,8 +24,9 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4)
 						.Build());
 		
-		// Start sender thread
-		sender_runner.AddTargetAddress(ConfigVals.default_address);
+		//Get config and start sender thread
+		ConfigVals.Reset(NewObject<UBristleconeConstants>());
+		sender_runner.AddTargetAddress(ConfigVals.Get()->default_address);
 		sender_runner.SetLocalSocket(socket);
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
