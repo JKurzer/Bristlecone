@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class bristlecone : ModuleRules
+public class Bristlecone : ModuleRules
 {
-	public bristlecone(ReadOnlyTargetRules Target) : base(Target)
+	public Bristlecone(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -21,21 +21,24 @@ public class bristlecone : ModuleRules
 			}
 			);
 
-		PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "InputCore", "Networking", "Sockets" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Networking", "Sockets"});
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreUObject",
+                "Core",
+                "CoreUObject",
 				"Engine",
 				"Slate",
 				"SlateCore",
-				// ... add private dependencies that you statically link with here ...	
-			}
-			);
+				"Engine",
+				"InputCore",
+				"Networking",
+				"Sockets"
+            });
 
 
-		DynamicallyLoadedModuleNames.AddRange(
+        DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
 				// ... add any modules that your module loads dynamically here ...

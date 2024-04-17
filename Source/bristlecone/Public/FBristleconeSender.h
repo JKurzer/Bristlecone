@@ -12,7 +12,7 @@ public:
 	
 	virtual ~FBristleconeSender() override;
 
-	void AddTargetAddress(FName target_address_str);
+	void AddTargetAddress(FString target_address_str);
 	void SetLocalSocket(const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket);
 	
 	virtual bool Init() override;

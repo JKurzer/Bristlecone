@@ -14,9 +14,9 @@ FBristleconeSender::~FBristleconeSender() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Sender: Destructing Bristlecone Sender"));
 }
 
-void FBristleconeSender::AddTargetAddress(FName target_address_str) {
+void FBristleconeSender::AddTargetAddress(FString target_address_str) {
 	FIPv4Address target_address;
-	FIPv4Address::Parse(target_address_str.ToString(), target_address);
+	FIPv4Address::Parse(target_address_str, target_address);
 	FIPv4Endpoint target_endpoint = FIPv4Endpoint(target_address, DEFAULT_PORT);
 	target_endpoints.Emplace(target_endpoint);
 }

@@ -1,15 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "bristlecone.h"
+#include "Bristlecone.h"
 
-#define LOCTEXT_NAMESPACE "FbristleconeModule"
+#define LOCTEXT_NAMESPACE "FBristleconeModule"
 
-void FbristleconeModule::StartupModule()
+void FBristleconeModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FbristleconeModule::ShutdownModule()
+void FBristleconeModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,4 +17,4 @@ void FbristleconeModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FbristleconeModule, bristlecone)
+IMPLEMENT_MODULE(FBristleconeModule, Bristlecone)

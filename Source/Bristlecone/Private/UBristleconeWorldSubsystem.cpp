@@ -3,7 +3,6 @@
 
 #include "UBristleconeWorldSubsystem.h"
 
-#include "FBristleconeConstants.h"
 #include "Common/UdpSocketBuilder.h"
 
 void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
@@ -26,7 +25,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.Build());
 		
 		// Start sender thread
-		sender_runner.AddTargetAddress(DEFAULT_ADDRESS);
+		sender_runner.AddTargetAddress(ConfigVals.default_address);
 		sender_runner.SetLocalSocket(socket);
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
