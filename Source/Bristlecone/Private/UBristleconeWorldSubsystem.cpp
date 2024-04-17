@@ -26,7 +26,9 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		
 		//Get config and start sender thread
 		ConfigVals.Reset(NewObject<UBristleconeConstants>());
-		sender_runner.AddTargetAddress(ConfigVals.Get()->default_address);
+		//TODO: refactor this to allow proper data driven construction.
+		FString address = ConfigVals.Get()->default_address.IsEmpty() ? "1.2.3.4" : ConfigVals.Get()->default_address;
+		sender_runner.AddTargetAddress(address);
 		sender_runner.SetLocalSocket(socket);
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
