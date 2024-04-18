@@ -7,6 +7,7 @@
 #include "FBristleconeReceiver.h"
 #include "FBristleconeSender.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "UBristleconeConstants.h"
 #include "UBristleconeWorldSubsystem.generated.h"
 
 typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
@@ -17,7 +18,7 @@ static constexpr uint16 MAX_TARGET_COUNT = 1;
 static constexpr float SLEEP_TIME_BETWEEN_THREAD_TICKS = 0.01f;
 
 UCLASS()
-class BRISTLECONEWORK_API UBristleconeWorldSubsystem : public UTickableWorldSubsystem
+class  UBristleconeWorldSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -31,6 +32,7 @@ protected:
 
   private:
 	FIPv4Endpoint local_endpoint;
+	UBristleconeConstants* ConfigVals;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socket;
 	
 	// Sender information

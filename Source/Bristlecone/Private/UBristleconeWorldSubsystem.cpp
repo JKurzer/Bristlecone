@@ -3,7 +3,6 @@
 
 #include "UBristleconeWorldSubsystem.h"
 
-#include "FBristleconeConstants.h"
 #include "Common/UdpSocketBuilder.h"
 
 void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
@@ -25,8 +24,11 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4)
 						.Build());
 		
-		// Start sender thread
-		sender_runner.AddTargetAddress(DEFAULT_ADDRESS);
+		//Get config and start sender thread
+		ConfigVals = NewObject<UBristleconeConstants>();
+		//TODO: refactor this to allow proper data driven construction.
+		FString address = ConfigVals->default_address.IsEmpty() ? "1.2.3.4" : ConfigVals->default_address;
+		sender_runner.AddTargetAddress(address);
 		sender_runner.SetLocalSocket(socket);
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
@@ -55,6 +57,8 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 	if (sender_socket_obj != nullptr) {
 		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(sender_socket_obj);
 	}
+
+	ConfigVals = nullptr;
 	
 	Super::Deinitialize();
 }
