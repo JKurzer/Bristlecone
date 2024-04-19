@@ -5,6 +5,22 @@
 
 #include "Common/UdpSocketBuilder.h"
 
+#if PLATFORM_HAS_BSD_SOCKET_FEATURE_WINSOCKETS
+#include "Windows/WindowsHWrapper.h"
+#include "Windows/AllowWindowsPlatformTypes.h"
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <qos2.h>
+
+typedef int32 SOCKLEN;
+
+#include "Windows/HideWindowsPlatformTypes.h"
+
+#endif
+#include <Runtime/Sockets/Private/BSDSockets/SocketsBSD.h>
+
+
 void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
 
@@ -23,7 +39,25 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.WithReceiveBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4)
 						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4)
 						.Build());
-		
+
+		//quite a lot of ungood things have to happen for us to do this. As a result, I'll be writing out what we're doing.
+		#if PLATFORM_HAS_BSD_SOCKET_FEATURE_WINSOCKETS
+		QOS_VERSION Version;
+		HANDLE      QoSHandle = NULL;
+
+		// Initialize the QoS version parameter.
+		Version.MajorVersion = 1;
+		Version.MinorVersion = 0;
+
+		// Get a handle to the QoS subsystem. this requires us to have the qwave lib file loaded to resolve the symbol. Oddly, you can't load the dll.
+		QOSCreateHandle(
+			&Version,
+			&QoSHandle);
+		//this is necessary because fsocket does not have a get native, as not all abstracted sockets actually have a native file-like socket
+		//our build mechanism has to break encapsulation pretty aggressively to resolve this, and it's quite ugly.
+		SOCKET mu = ((FSocketBSD*)  (socket.Get()))->GetNativeSocket();// Time to go for a very bad ride.
+		#endif
+
 		//Get config and start sender thread
 		ConfigVals = NewObject<UBristleconeConstants>();
 		//TODO: refactor this to allow proper data driven construction.
