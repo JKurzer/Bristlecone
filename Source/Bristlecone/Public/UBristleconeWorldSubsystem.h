@@ -35,7 +35,9 @@ protected:
   private:
 	FIPv4Endpoint local_endpoint;
 	UBristleconeConstants* ConfigVals;
-	TSharedPtr<FSocket, ESPMode::ThreadSafe> socket;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketHigh;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketLow;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketFast;
 	
 	// Sender information
   	FBristleconeSender sender_runner;

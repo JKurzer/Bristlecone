@@ -32,14 +32,15 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: World beginning play"));
 
 		local_endpoint = FIPv4Endpoint(FIPv4Address::Any, DEFAULT_PORT);
-		socket = MakeShareable(FUdpSocketBuilder(TEXT("Bristlecone.Receiver.Socket"))
+		FUdpSocketBuilder socket_factory = FUdpSocketBuilder(TEXT("Bristlecone.Receiver.Socket"))
 						.AsNonBlocking()
 						.AsReusable()
 						.BoundToEndpoint(local_endpoint)
 						.WithReceiveBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4)
-						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4)
-						.Build());
-
+						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4);
+		socketHigh = MakeShareable(socket_factory.Build());
+		socketLow = MakeShareable(socket_factory.Build());
+		socketFast = MakeShareable(socket_factory.Build());
 		//quite a lot of ungood things have to happen for us to do this. As a result, I'll be writing out what we're doing.
 		#if PLATFORM_HAS_BSD_SOCKET_FEATURE_WINSOCKETS
 		QOS_VERSION Version;
@@ -55,7 +56,10 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 			&QoSHandle);
 		//this is necessary because fsocket does not have a get native, as not all abstracted sockets actually have a native file-like socket
 		//our build mechanism has to break encapsulation pretty aggressively to resolve this, and it's quite ugly.
-		SOCKET mu = ((FSocketBSD*)  (socket.Get()))->GetNativeSocket();// Time to go for a very bad ride.
+		SOCKET underlyingHigh =	((FSocketBSD*)	(socketHigh.Get()))->GetNativeSocket();// Time to go for a very bad ride.
+		SOCKET underlyingLow =	((FSocketBSD*)	(socketLow.Get()))->GetNativeSocket();
+		SOCKET underlyingFast =	((FSocketBSD*)	(socketFast.Get()))->GetNativeSocket();
+		
 		#endif
 
 		//Get config and start sender thread
@@ -63,11 +67,11 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		//TODO: refactor this to allow proper data driven construction.
 		FString address = ConfigVals->default_address.IsEmpty() ? "1.2.3.4" : ConfigVals->default_address;
 		sender_runner.AddTargetAddress(address);
-		sender_runner.SetLocalSocket(socket);
+		sender_runner.SetLocalSocket(socketHigh);
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
 		// Start receiver thread
-		receiver_runner.SetLocalSocket(socket);
+		receiver_runner.SetLocalSocket(socketHigh);
 		receiver_thread.Reset(FRunnableThread::Create(&receiver_runner, TEXT("Bristlecone.Receiver")));
 	}
 }
