@@ -13,7 +13,13 @@ public:
 	virtual ~FBristleconeSender() override;
 
 	void AddTargetAddress(FString target_address_str);
-	void SetLocalSocket(const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket);
+	void SetLocalSockets(
+		const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket_high,
+		const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket_low,
+		const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket_adaptive
+	);
+
+	void ActivateDSCP();
 	
 	virtual bool Init() override;
 	virtual uint32 Run() override;
@@ -25,7 +31,9 @@ private:
 
 	FBristleconePacketContainer<FControllerState, 3> packet_container;
 	
-	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_high;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_low;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_adaptive;
 	TArray<FIPv4Endpoint> target_endpoints;
 
 	TUniquePtr<ISocketSubsystem> socket_subsystem;

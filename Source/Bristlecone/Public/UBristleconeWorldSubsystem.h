@@ -8,7 +8,9 @@
 #include "FBristleconeSender.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "UBristleconeConstants.h"
+
 #include "UBristleconeWorldSubsystem.generated.h"
+
 
 typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
 
@@ -33,7 +35,9 @@ protected:
   private:
 	FIPv4Endpoint local_endpoint;
 	UBristleconeConstants* ConfigVals;
-	TSharedPtr<FSocket, ESPMode::ThreadSafe> socket;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketHigh;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketLow;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketAdaptive;
 	
 	// Sender information
   	FBristleconeSender sender_runner;
