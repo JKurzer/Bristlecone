@@ -5,21 +5,6 @@
 
 #include "Common/UdpSocketBuilder.h"
 
-#if PLATFORM_HAS_BSD_SOCKET_FEATURE_WINSOCKETS
-#include "Windows/WindowsHWrapper.h"
-#include "Windows/AllowWindowsPlatformTypes.h"
-
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <qos2.h>
-
-typedef int32 SOCKLEN;
-
-#include "Windows/HideWindowsPlatformTypes.h"
-
-#endif
-#include <Runtime/Sockets/Private/BSDSockets/SocketsBSD.h>
-
 
 void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
@@ -40,34 +25,16 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4);
 		socketHigh = MakeShareable(socket_factory.Build());
 		socketLow = MakeShareable(socket_factory.Build());
-		socketFast = MakeShareable(socket_factory.Build());
-		//quite a lot of ungood things have to happen for us to do this. As a result, I'll be writing out what we're doing.
-		#if PLATFORM_HAS_BSD_SOCKET_FEATURE_WINSOCKETS
-		QOS_VERSION Version;
-		HANDLE      QoSHandle = NULL;
+		socketAdaptive = MakeShareable(socket_factory.Build());
 
-		// Initialize the QoS version parameter.
-		Version.MajorVersion = 1;
-		Version.MinorVersion = 0;
-
-		// Get a handle to the QoS subsystem. this requires us to have the qwave lib file loaded to resolve the symbol. Oddly, you can't load the dll.
-		QOSCreateHandle(
-			&Version,
-			&QoSHandle);
-		//this is necessary because fsocket does not have a get native, as not all abstracted sockets actually have a native file-like socket
-		//our build mechanism has to break encapsulation pretty aggressively to resolve this, and it's quite ugly.
-		SOCKET underlyingHigh =	((FSocketBSD*)	(socketHigh.Get()))->GetNativeSocket();// Time to go for a very bad ride.
-		SOCKET underlyingLow =	((FSocketBSD*)	(socketLow.Get()))->GetNativeSocket();
-		SOCKET underlyingFast =	((FSocketBSD*)	(socketFast.Get()))->GetNativeSocket();
-		
-		#endif
 
 		//Get config and start sender thread
 		ConfigVals = NewObject<UBristleconeConstants>();
 		//TODO: refactor this to allow proper data driven construction.
 		FString address = ConfigVals->default_address.IsEmpty() ? "1.2.3.4" : ConfigVals->default_address;
 		sender_runner.AddTargetAddress(address);
-		sender_runner.SetLocalSocket(socketHigh);
+		sender_runner.SetLocalSockets(socketHigh, socketLow, socketAdaptive);
+		sender_runner.ActivateDSCP();
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
 		// Start receiver thread
@@ -86,12 +53,29 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 		receiver_thread->Kill();
 	}
 
-	if (socket.IsValid()) {
-		socket.Get()->Close();
+	if (socketHigh.IsValid()) {
+		socketHigh.Get()->Close();
 	}
-	socket = nullptr;
+	if (socketLow.IsValid()) {
+		socketLow.Get()->Close();
+	}
+	if (socketAdaptive.IsValid()) {
+		socketAdaptive.Get()->Close();
+	}
+	socketHigh = nullptr;
+	socketLow = nullptr;
+	socketAdaptive = nullptr;
 
-	FSocket* sender_socket_obj = socket.Get();
+	//this will all need to be refactored, but tbh, I'm not sure we'll keep this for long enough to do it.
+	FSocket* sender_socket_obj = socketHigh.Get();
+	if (sender_socket_obj != nullptr) {
+		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(sender_socket_obj);
+	}
+	sender_socket_obj = socketLow.Get();
+	if (sender_socket_obj != nullptr) {
+		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(sender_socket_obj);
+	}
+	sender_socket_obj = socketAdaptive.Get();
 	if (sender_socket_obj != nullptr) {
 		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(sender_socket_obj);
 	}
