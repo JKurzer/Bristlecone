@@ -92,7 +92,7 @@ void FBristleconeSender::ActivateDSCP()
 
 	QOSAddSocketToFlow(QoSHandle, underlyingHigh, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeControl, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
-	QOSAddSocketToFlow(QoSHandle, underlyingLow, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeExcellentEffort, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
+	QOSAddSocketToFlow(QoSHandle, underlyingLow, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeControl, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
 	QOSAddSocketToFlow(QoSHandle, underlyingAdaptive, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeExcellentEffort, 0, &QoSFlowId);
 #endif
@@ -110,7 +110,7 @@ uint32 FBristleconeSender::Run() {
 	int counter = 0;
 	FControllerState sending_state;
 	
-	while(running && sender_socket_high) {
+	while(sender_socket_high) {
 		// Update ring array
 		counter++;
 		sending_state.controller_arr[0] = counter;
@@ -138,7 +138,6 @@ uint32 FBristleconeSender::Run() {
 				consecutive_zero_bytes_sent = 0;
 			}
 			
-			running = packet_sent && consecutive_zero_bytes_sent < MAX_MIXED_CONSECUTIVE_PACKETS_ALLOWED;
 		}
 
 		FPlatformProcess::Sleep(SLEEP_TIME_BETWEEN_THREAD_TICKS);

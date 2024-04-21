@@ -17,7 +17,7 @@ typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
 static constexpr int CONTROLLER_STATE_PACKET_SIZE = sizeof(FControllerStatePacket);
 static constexpr int DEFAULT_PORT = 40000;
 static constexpr uint16 MAX_TARGET_COUNT = 1;
-static constexpr float SLEEP_TIME_BETWEEN_THREAD_TICKS = 0.01f;
+static constexpr float SLEEP_TIME_BETWEEN_THREAD_TICKS = 0.016f;
 
 UCLASS()
 class  UBristleconeWorldSubsystem : public UTickableWorldSubsystem

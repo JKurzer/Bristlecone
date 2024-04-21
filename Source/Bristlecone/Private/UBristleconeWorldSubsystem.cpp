@@ -4,7 +4,12 @@
 #include "UBristleconeWorldSubsystem.h"
 
 #include "Common/UdpSocketBuilder.h"
+THIRD_PARTY_INCLUDES_START
+#include <concrt.h>
 
+#include "winrt/Windows.Gaming.Input.h"
+THIRD_PARTY_INCLUDES_END
+namespace RawInput = winrt::Windows::Gaming::Input;
 
 void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
@@ -21,8 +26,8 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.AsNonBlocking()
 						.AsReusable()
 						.BoundToEndpoint(local_endpoint)
-						.WithReceiveBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4)
-						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 4);
+						.WithReceiveBufferSize(CONTROLLER_STATE_PACKET_SIZE * 10)
+						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 10);
 		socketHigh = MakeShareable(socket_factory.Build());
 		socketLow = MakeShareable(socket_factory.Build());
 		socketAdaptive = MakeShareable(socket_factory.Build());

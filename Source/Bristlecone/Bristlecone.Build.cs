@@ -15,7 +15,18 @@ public class Bristlecone : ModuleRules
 		//Don't do this. We need it to avoid having to either patch the engine or rebuild most of sockets or use pointer arithmatic and void*
         PrivateIncludePaths.Add(src_path + "Sockets\\Private\\BSDSockets\\");
         PrivateIncludePaths.Add(src_path + "Sockets\\Private\\");
-
+        if (Target.Platform == UnrealTargetPlatform.Win64)
+        {
+            // These parameters are mandatory for winrt support
+            bEnableExceptions = true;
+            bUseUnity = false;
+            CppStandard = CppStandardVersion.Cpp17;
+            PublicSystemLibraries.AddRange(new string[] { "shlwapi.lib", "runtimeobject.lib" });
+            PrivateIncludePaths.Add(Path.Combine(Target.WindowsPlatform.WindowsSdkDir,
+                                                "Include",
+                                                Target.WindowsPlatform.WindowsSdkVersion,
+                                                "cppwinrt"));
+        }
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicAdditionalLibraries.Add("qwave.lib"); // this will need to be fixed. god.
 
