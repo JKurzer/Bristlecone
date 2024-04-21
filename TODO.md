@@ -10,8 +10,8 @@
 --Basic Payload Encryption  
 --Data access zoning by key  
 
-**Areas of Work**
--Configuration
+**Areas of Work**  
+-Configuration   
 --Many many values are hard-coded
 -Reference Control Input Integration  
 --Right now, the sender just dumps an empty control packet and timestamps it.  
