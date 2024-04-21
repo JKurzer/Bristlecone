@@ -72,4 +72,10 @@ A3: In situations where IP compromise is known to be prevented, it can serve as 
 A4: In situations where IP compromise cannot be prevented, a rolling nonce can negotiated during the TCP session. This is not included in the core protocol definition.  
   
 **Q: Why are you calling the PAYLOAD a clone?**  
-A: Bristlecone only mandates that each clone be transmitted multiple times. By default, all packets in a clone set are expected to be identical in our implementations. In practice, if you are making your own instead of using ours, it is only necessary that their cloned payloads be identical. These clones can be decorated, if need be. There are use cases where this may be helpful, especially as minimum ethernet packet size is generally 64 bytes. 
+A: Bristlecone only mandates that each clone be transmitted multiple times. By default, all packets in a clone set are expected to be identical in our implementations. In practice, if you are making your own instead of using ours, it is only necessary that their cloned payloads be identical. These clones can be decorated, if need be. There are use cases where this may be helpful, especially as minimum ethernet packet size is generally 64 bytes.   
+
+**Q: Does this actually work?**  
+A: Yeah. Better than we expected.  
+A1: Our testing suggests that bristlecone reduces latency by 2ms or more for 20% of packets  from Seattle to AWS R1 (North Virginia).  
+A2: While testing on wifi isn't comprehensive yet, it appears to add considerable resilience to link-loss on first and final mile delivery.  
+A3: We still need to measure it against the built-in networking for controls replication within UE. 
