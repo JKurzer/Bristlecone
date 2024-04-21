@@ -1,7 +1,7 @@
 **Missing Features**  
 - [ ] TCP Backhaul  
   - [ ] Time Sync  
-  -Key Negotiation  
+  - [ ] Key Negotiation  
 -Session Concepts  
 --Sym Key Sharing  
 --UDP Reflector has no session concept  
