@@ -44,7 +44,7 @@ uint32 FBristleconeReceiver::Run() {
 			UE_LOG(LogTemp, Warning, TEXT("@ Received, %lld, %lld"), receiving_state.GetTransferTime(), round_trip_time);
 		}
 
-		FPlatformProcess::Sleep(SLEEP_TIME_BETWEEN_THREAD_TICKS);
+		receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f);
 	}
 	
 	return 0;
