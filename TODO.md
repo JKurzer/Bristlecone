@@ -12,11 +12,11 @@
 
 **Areas of Work**  
 - [ ] Configuration   
---Many many values are hard-coded
+  - [ ] Many many values are hard-coded
 - [ ] Reference Control Input Integration  
---Right now, the sender just dumps an empty control packet and timestamps it.  
---Until a ref input implementation exists, we just send at 100hz poll rate.  
+  - [ ] Right now, the sender just dumps an empty control packet and timestamps it.  
+  - [ ] Until a ref input implementation exists, we just send at 100hz poll rate.  
 - [ ] Fast Logging  
---UE Logging is not intended for millisecond precision perf analysis.  
+  - [ ] UE Logging is not intended for millisecond precision perf analysis.  
 - [ ] Multiway Receive (Many threads per single socket)  
---I hope we don't need this, but we might.
+  - [ ] I hope we don't need this, but we might.
