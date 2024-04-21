@@ -1,6 +1,7 @@
 # Missing Features 
 - [ ] TCP Backhaul  
-  - [ ] Time Sync  
+  - [ ] Time Sync
+  - [ ] Optionally, schema\port mapping negotiation. While this is in the standard, we don't need it and can leave it to others for now.  
   - [ ] Key Negotiation
 - [ ] FlatBuff\Protobuff
   - [ ] Right now our datagrams are hardcoded.
