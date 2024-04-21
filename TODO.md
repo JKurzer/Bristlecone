@@ -1,6 +1,6 @@
 **Missing Features**  
 - [ ] TCP Backhaul  
---Time Sync  
+-- [ ] Time Sync  
 --Key Negotiation  
 -Session Concepts  
 --Sym Key Sharing  
