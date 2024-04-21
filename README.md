@@ -75,5 +75,5 @@ A4: In situations where IP compromise cannot be prevented, a rolling nonce can n
 A: Bristlecone only mandates that each clone be transmitted multiple times. By default, all packets in a clone set are expected to be identical in our implementations. In practice, if you are making your own instead of using ours, it is only necessary that their cloned payloads be identical. These clones can be decorated, if need be. There are use cases where this may be helpful, especially as minimum ethernet packet size is generally 64 bytes.   
 
 **Q: Does this actually work?**  
-A1: Yes. Our testing very strongly suggests that bristlecone reduces latency by 2ms or more for 20% of packets routing from Seattle to AWS R1 (North Virginia).  
+A1: Yes. Our testing suggests that bristlecone reduces latency by 2ms or more for 20% of packets routing from Seattle to AWS R1 (North Virginia).  
 A2: While testing on wifi isn't comprehensive yet, it appears to add considerable resilience to link-loss on first and final mile delivery.
