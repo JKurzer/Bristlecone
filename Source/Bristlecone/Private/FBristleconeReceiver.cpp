@@ -40,8 +40,8 @@ uint32 FBristleconeReceiver::Run() {
 			receiver_socket->RecvFrom(received_data.GetData(), received_data.Num(), bytes_read, *targetAddr);
 			
 			memcpy(receiving_state.GetPacket(), received_data.GetData(), bytes_read);
-			FTimespan round_trip_time = FDateTime::Now() - receiving_state.GetTransferTime();
-			UE_LOG(LogTemp, Warning, TEXT("Received %s in %d bytes from target in %d milliseconds"), *receiving_state.GetPacket()->ToString(), bytes_read, round_trip_time.GetFractionMilli());
+			long long round_trip_time = std::chrono::steady_clock::now().time_since_epoch().count() - receiving_state.GetTransferTime();
+			UE_LOG(LogTemp, Warning, TEXT("@ Received, %lld, %lld"), receiving_state.GetTransferTime(), round_trip_time);
 		}
 
 		FPlatformProcess::Sleep(SLEEP_TIME_BETWEEN_THREAD_TICKS);

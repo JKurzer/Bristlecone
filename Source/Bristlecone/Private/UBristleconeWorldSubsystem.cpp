@@ -31,7 +31,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		//Get config and start sender thread
 		ConfigVals = NewObject<UBristleconeConstants>();
 		//TODO: refactor this to allow proper data driven construction.
-		FString address = ConfigVals->default_address.IsEmpty() ? "1.2.3.4" : ConfigVals->default_address;
+		FString address = ConfigVals->default_address.IsEmpty() ? "100.25.169.113" : ConfigVals->default_address;
 		sender_runner.AddTargetAddress(address);
 		sender_runner.SetLocalSockets(socketHigh, socketLow, socketAdaptive);
 		sender_runner.ActivateDSCP();

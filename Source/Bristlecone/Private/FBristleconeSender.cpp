@@ -123,15 +123,15 @@ uint32 FBristleconeSender::Run() {
 
 			bool packet_sent = sender_socket_high->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 														   bytes_sent, *endpoint.ToInternetAddr());
-			UE_LOG(LogTemp, Warning, TEXT("Sent messages: %s : %s : Address - %s : BytesSent - %d"), *current_controller_state->ToString(),
-				   (packet_sent ? TEXT("true") : TEXT("false")), *endpoint.ToString(), bytes_sent);
 			
 			packet_sent = sender_socket_low->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 				bytes_sent, *endpoint.ToInternetAddr());
 			
 			packet_sent = sender_socket_adaptive->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 				bytes_sent, *endpoint.ToInternetAddr());
-			
+			UE_LOG(LogTemp, Warning, TEXT("Sent messages: %s : %s : Address - %s : BytesSent - %d"), *current_controller_state->ToString(),
+				(packet_sent ? TEXT("true") : TEXT("false")), *endpoint.ToString(), bytes_sent);
+
 			if (bytes_sent == 0) {
 				consecutive_zero_bytes_sent++;
 			} else {

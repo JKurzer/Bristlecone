@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <chrono>
+
 template<
 	typename CLONE_TYPE,
 	unsigned int CLONE_SIZE>
@@ -33,7 +35,7 @@ public:
 		return &packet;
 	}
 
-	FDateTime GetTransferTime() const {
+	long long GetTransferTime() const {
 		return packet.GetTransferTime();
 	}
 
@@ -62,12 +64,12 @@ public:
 		memset(clone_array, 0, sizeof(CLONE_TYPE) * CLONE_SIZE);
 	}
 
-	FDateTime GetTransferTime() const {
+	long long GetTransferTime() const {
 		return transfer_time;
 	}
 	
 	void UpdateTransferTime() {
-		transfer_time = FDateTime::Now();
+		transfer_time = std::chrono::steady_clock::now().time_since_epoch().count();
 	}
 
 	CLONE_TYPE* GetPointerToElement(uint32 element_index) {
@@ -76,8 +78,7 @@ public:
 
 	FString ToString() const {
 		FString output;// = FString::Printf(TEXT("Transfer time = %s, array = "), *transfer_time.ToString());
-		output += "Transfer time = ";
-		output += transfer_time.ToString();
+		output += FString::Printf(TEXT("Transfer time = %lld"), transfer_time);
 		output += ", array = "; 
 		for (uint32 array_index = 0; array_index < CLONE_SIZE; array_index++) {
 			output += clone_array[array_index].ToString();
@@ -88,7 +89,7 @@ public:
 
 private:
 	// Packet headers
-	FDateTime transfer_time;
+	long long transfer_time;
 	// Data clone
 	CLONE_TYPE clone_array[CLONE_SIZE];
 };
