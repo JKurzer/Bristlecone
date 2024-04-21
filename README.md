@@ -76,4 +76,5 @@ A: Bristlecone only mandates that each clone be transmitted multiple times. By d
 
 **Q: Does this actually work?**  
 A1: Yes. Our testing suggests that bristlecone reduces latency by 2ms or more for 20% of packets routing from Seattle to AWS R1 (North Virginia).  
-A2: While testing on wifi isn't comprehensive yet, it appears to add considerable resilience to link-loss on first and final mile delivery.
+A2: While testing on wifi isn't comprehensive yet, it appears to add considerable resilience to link-loss on first and final mile delivery.  
+A3: We still need to measure it against the built-in networking for controls replication within UE. 
