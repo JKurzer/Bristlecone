@@ -3,13 +3,6 @@
 
 #include "UCablingWorldSubsystem.h"
 
-THIRD_PARTY_INCLUDES_START
-#include <concrt.h>
-
-#include "winrt/Windows.Gaming.Input.h"
-THIRD_PARTY_INCLUDES_END
-namespace RawInput = winrt::Windows::Gaming::Input;
-
 //Goal: Cabling is a thin threaded layer that pulls input from the controller, and provides it to: 
 // the Cabling world subsystem for making accessible to the game thread...
 // AND
