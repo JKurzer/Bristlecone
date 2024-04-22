@@ -8,6 +8,9 @@
 #include "UCablingWorldSubsystem.generated.h"
 
 
+//Goal: The Cabling Subsystem maintains the cabling thread and provides the output of
+//the control polling that it performs to the normal input system. Cabling is not
+//intended to replace a full input system, just provide a threaded flow
 
 
 UCLASS()
