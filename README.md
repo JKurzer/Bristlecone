@@ -78,4 +78,13 @@ A: Bristlecone only mandates that each clone be transmitted multiple times. By d
 A: Yeah. Better than we expected.  
 A1: Our testing suggests that bristlecone reduces latency by 2ms or more for 20% of packets  from Seattle to AWS R1 (North Virginia).  
 A2: While testing on wifi isn't comprehensive yet, it appears to add considerable resilience to link-loss on first and final mile delivery.  
-A3: We still need to measure it against the built-in networking for controls replication within UE. 
+A3: We still need to measure it against the built-in networking for controls replication within UE.  
+
+# Additional & Missing Features
+The reference implementation currently lacks the following major features:
+- protobuf\flatbuff\capnproto schematization
+- session management
+- encryption
+
+The reference implementation currently includes the following additional capabilities:  
+- control flow interception through Cabling 
