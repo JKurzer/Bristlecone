@@ -45,16 +45,26 @@ uint32 FCabling::Run() {
 	
 	RawishInput::Gamepad::GamepadAdded({ this,&FCabling::AddPad});
 	RawishInput::Gamepad::GamepadRemoved({ this,&FCabling::DropPad});
+	
+	const RawishInput::Gamepad* current = nullptr;
 	while (running)
 	{
-
+		
 		ticktrack = (ticktrack + 1) % 512;
-		concurrency::critical_section::scoped_lock{ controllerSetLock };
+		if(ticktrack == 500)
+		{
+			//this is likely to be unsafe. I need to check what a disconnected gamepad actually looks like. is it null?
+			//unless you use really broad locking, I don't see how you can avoid getting into trouble if so.
+			concurrency::critical_section::scoped_lock{ controllerSetLock };
+			current = myGamepads.empty() ? nullptr : &(*myGamepads.begin()); //this needs to be revised.
+		}
 
 		//game pad reading
-		RawishInput::GamepadReading cur = myGamepads.begin()->GetCurrentReading(); 
-		
-		//obv, we'll need some way to figure out WHICH pad.
+		if (current != nullptr)
+		{
+			RawishInput::GamepadReading cur = current->GetCurrentReading();
+		}
+		//obv, we'll need some way to figure out WHICH pad. elided for now!
 		//disconnected pads is actually easy, that's handled by the api.
 		//oddly though, it's hard to figure out a good heuristic for pads that
 		//aren't in use but are connected, like wired gamepads. 
@@ -69,7 +79,7 @@ uint32 FCabling::Run() {
 		//only plan to transmit at about 120hz. We're just sampling often to try to catch input
 		//as early as we can. We can also make use of highly granular movement to do some
 		//input prediction. That gets easier the more granularity you have.
-		FPlatformProcess::Sleep(1.0f / 256); 
+		FPlatformProcess::Sleep(1.0f / 512); 
 	}
 	return 0;
 }
