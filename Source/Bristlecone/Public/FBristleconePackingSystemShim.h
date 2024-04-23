@@ -2,7 +2,8 @@
 
 #include <chrono>
 
-#pragma pack(0)
+//this should have no effect, but we set it to ensure there's nothing... exciting.
+#pragma pack(push, 1)
 struct SixteenByter {
 	uint64_t high;
 	uint64_t low;
@@ -11,23 +12,29 @@ typedef SixteenByter Bigby;
 #pragma pack (pop)
 /**
  * 
- * In the long term, we'll wish to support SBE (SimpleBinaryEncoding) :
- * https://github.com/real-logic/simple-binary-encoding/tree/master
- 
+ * In the long term, we'll wish to support a flexible schema'd interchange. 
  * However, in the meantime, I've opted to follow my own advice in the standard. 
- * So: This ENTIRE implementation ONLY supports 8 and 16 byte messages.
+ * So: This ENTIRE implementation ONLY supports 8 and 16 byte messages. Endian support requires two datagram types.
  * 
- * The problem with SBE  is that it still labels each message with the wireformat, which we actually don't need!
- * 
- * Let me explain. Because each datagram gets a unique port:ip combo, we always know what schema is being
+ * Why not support a schema'd interchange now?
+ * Let's go through 1 by 1. SBE adds at least an 8 byte header. Flatbuf with Flatcc incurs 16+bytes of overhead.
+ * Protobuf varies considerably, as does CapnProto. They're generally the best in this regard in some ways,
+ * but even simple decisions like using named fields can cause the size of a message to explode.
+ *
+ * SBE:
+ * Because each datagram gets a unique port:ip combo, we always know what schema is being
  * transmitted to us and by us. Datagram sizes are deterministic. Any datagrams that don't match a known
  * {size, port, ip, frequency} -> schema mapping? They're just rejected.
  * 
- * This matters because our messages are so small that including an 8byte header like SBE would either double
- * the size of our message if we did it per clone_type, or significantly increase it if we did it on a packet
- * level. Specifically, about a 10% increase even at 16b messages. We'll eventually switch to it, but I'll need
- * time I don't have right now to find a way around this. As a result, there's a shim here where SBE will go.
+ * Including an 8byte header like SBE would either double the size of our message if we did it per clone_type,
+ * or significantly increase it if we did it on a packet level. Specifically, about a 10% increase even at 16b messages.  
  * 
+ * FlatBuff:
+ * Vtables are always constructed, pretty much. You can't escape it.
+ * 
+ * Protobuf\CapnProto:
+ * The Proto Bros don't have much overhead for very short messages, like what we're using... IF you know exactly what you're encoding,
+ * and all the tricks. For example, you need to use packed arrays, not fields. Fields add field headers! 
  * 
  * Implementation Notes:
  * The right way to do this is with concepts and constraints, but unfortunately, UE is highly resistant to
@@ -46,6 +53,19 @@ typedef SixteenByter Bigby;
  * Like MTU, minimums aren't specified that I could find, more just settled on? So I can't say what the wifi min is.
  * 
  */
+
+
+
+ // Direct Inheritance Contraindicated
+ // You should not inherit directly from packable. I'm allowing it because it MIGHT be necessary
+ // but it's not a good idea and you should consider it carefully.
+ // 
+ // WARNING: High Change Zone 
+ // Packable will see virtual members added when we implement SBE!
+class Packable {
+	virtual char* Pack() = 0;
+	virtual int GetPackedSize() = 0;
+};
 
 class Packable8 : Packable {
 public:
@@ -92,15 +112,4 @@ template <class T> class TagPack8 :Packable8
 	{
 		return T.PackImpl();
 	}
-};
-
-// Direct Inheritance Contraindicated
-// You should not inherit directly from packable. I'm allowing it because it MIGHT be necessary
-// but it's not a good idea and you should consider it carefully.
-// 
-// WARNING: High Change Zone 
-// Packable will see virtual members added when we implement SBE!
-class Packable {
-	virtual char* Pack() = 0;
-	virtual int GetPackedSize() = 0;
 };
