@@ -5,9 +5,6 @@
 
 //thanks a lot, unreal! If you don't do ALL of this, you'll hit FP errors and this won't be platform independent.
 //TODO: And clang may not honor these anyway, so have fun with that, Eliza!
-#pragma fast-math push
-#pragma fast-math off
-#pragma fp_contract (push)
 #pragma fp_contract (off)
 #pragma float_control (precise, on, push)
 
@@ -118,7 +115,5 @@ public:
 	}
 };
 
-#pragma fp_contract pop
-#pragma fast-math pop
 #pragma float_control(pop)
 #pragma float_control(pop)

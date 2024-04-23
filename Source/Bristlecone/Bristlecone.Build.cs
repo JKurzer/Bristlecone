@@ -20,7 +20,6 @@ public class Bristlecone : ModuleRules
             // These parameters are mandatory for winrt support
             bEnableExceptions = true;
             bUseUnity = false;
-            CppStandard = CppStandardVersion.Cpp17;
             PublicSystemLibraries.AddRange(new string[] { "shlwapi.lib", "runtimeobject.lib" });
             PrivateIncludePaths.Add(Path.Combine(Target.WindowsPlatform.WindowsSdkDir,
                                                 "Include",
