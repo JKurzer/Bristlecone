@@ -56,7 +56,27 @@ public:
 	
 	uint64_t PackImpl() override
 	{
-		return (uint64_t) 0;
+		uint64_t box = 0;
+
+		box &= lx.to_ullong();
+		
+		box <<= ly.size();
+		box &= ly.to_ullong();
+
+		box <<= rx.size();
+		box &= rx.to_ullong();
+
+		box <<= ry.size();
+		box &= ry.to_ullong();
+
+
+		box <<= buttons.size();
+		box &= buttons.to_ullong();
+
+		box <<= events.size();
+		box &= events.to_ullong();
+
+		return box;
 	}
 
 	// do not use this on a double. You will have a bad time.
@@ -85,6 +105,9 @@ public:
 	exp += DEBIAS_J;
 	uint32_t mant	= (patientNonZero & MANTSLICE_J); //note the implicit leading one is not automatically captured.
 	mant += LEADING_ONE_J; // equivalent to bit-and here. this is now the actual significand.
+
+	//I actually think this line is wrong. Something about the exp shift bugs me. I'm gonna need to sit with it.
+	// for now, it's fine, we aren't moving data around yet, this is just proving the packing out.
 	int16_t box = sign * ((mant >> 12) << exp); // trim to 10 bits of precision then exp, sign, and truncate. i think?
 	//that's intentionally an int32. we're basically going to end up with a number from 512 to -511. I hope.
 	return box;
