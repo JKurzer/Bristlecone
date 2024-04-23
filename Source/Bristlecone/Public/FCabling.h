@@ -10,17 +10,24 @@ THIRD_PARTY_INCLUDES_START
 THIRD_PARTY_INCLUDES_END
 namespace RawInput = winrt::Windows::Gaming::Input;
 
-//((unsigned long&)y) & 0x7FFFFF grabs the last 23 bits of a 
-
 
 class FCabling : public FRunnable {
 public:
 	FCabling();
-
 	virtual ~FCabling() override;
 
 	virtual bool Init() override;
-	virtual uint32 Run() override;
+	virtual uint32 Run() override
+	{
+
+		while (running)
+		{
+			//game pad reading
+			//push to both queues.
+			//wake bristlecone
+			FPlatformProcess::Sleep(1/512);
+		}
+	};
 	virtual void Exit() override;
 	virtual void Stop() override;
 
