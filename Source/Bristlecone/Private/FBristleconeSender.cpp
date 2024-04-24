@@ -57,14 +57,14 @@ void FBristleconeSender::ActivateDSCP()
 	//Fortunately, Linux, mac, steam deck, and many other platforms will actually be simpler, as those allow dscp
 	//to be set normally, instead of requiring qos manipulation.
 	// 
-	//The outliers are switch and SDR, and I don't even know that you'd ever use bristlecone with SDR, as it's basically
+	//The outliers are switch and Steam Datagram Relays, and I don't even know that you'd ever use bristlecone with SDR, as it's basically
 	// a successor system with a narrow application space.
 	
 	//quite a lot of ungood things have to happen for us to do this. As a result, I'll be writing out what we're doing.
 	// https://learn.microsoft.com/en-us/windows/win32/api/qos2/nf-qos2-qosaddsockettoflow
 	//https://github.com/microsoft/Windows-classic-samples/blob/main/Samples/Win7Samples/netds/Qos/Qos2/qossample.c
 	//This is probably the best example I can provide for WHAT is happening.
-	//Bear in mind that DSCP settings may literally do nothing, so this is quite a bit of work to find out.
+	//DSCP settings do appear to have a significant but small effect on behavior, contrary to popular wisdom.
 #if PLATFORM_HAS_BSD_SOCKET_FEATURE_WINSOCKETS
 	QOS_VERSION Version;
 	SOCKADDR_IN destination;
@@ -89,12 +89,28 @@ void FBristleconeSender::ActivateDSCP()
 	SOCKET underlyingLow = ((FSocketBSD*)(sender_socket_low.Get()))->GetNativeSocket();
 	SOCKET underlyingSPICY = ((FSocketBSD*)(sender_socket_background.Get()))->GetNativeSocket();
 	//qwave MAY need destination and point. as a result, we had to wait to perform this until now.
+	//https://learn.microsoft.com/en-us/windows/win32/api/qos2/ne-qos2-qos_traffic_type
+	//The DSCP markings are the most effective part, so far as I can tell, but local routers often support 802.1.
+	//we should switch to using https://learn.microsoft.com/en-us/windows/win32/api/qos2/nf-qos2-qossetflow
+	//and revisit this. It appears that you can override bandwidth limits that may be automatically placed on flows
+	// and get system RTT information for flows. Both of these would be useful. the windows QoS system is always running
+	//to some extent and CAN delay traffic from being sent to meet traffic shaping goals.
+	// see https://learn.microsoft.com/en-us/windows/win32/api/qos2/ne-qos2-qos_shaping
+	// We'd like to modify this aggressively, but that's more testing and research than I can afford atm.
+	
+	//Codepoints worth testing still are: some combinations of (4, 7, 11, 18, 23)
+	//which cisco docs indicate are supported AHBs. I'm not sure how to get windows to set and respect those without admin.
 
+	//While there are other codings for gaming, our control flow is actually most similar to low bit-rate av flows
+	//where jitter is crippling. We can't mark all our packets at codepoint 46, or we may get shaped and dropped for being
+	//bad citizens, but we do want to mark one of our clones at 46.
 	QOSAddSocketToFlow(QoSHandle, underlyingHigh, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeAudioVideo, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
+	//Excellent effort is an odd one. It should code for what is basically a legacy value, but it appears to still be reflected.
 	QOSAddSocketToFlow(QoSHandle, underlyingLow, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeExcellentEffort, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
-	QOSAddSocketToFlow(QoSHandle, underlyingSPICY, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeBestEffort, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
+	//Control doesn't seem to actually set a respected value. Unfortunately, I can't find a way to set an arbitrary DSCP without admin on windows.
+	QOSAddSocketToFlow(QoSHandle, underlyingSPICY, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeVoice, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 #endif
 }
 

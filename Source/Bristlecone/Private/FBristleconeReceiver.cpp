@@ -40,8 +40,10 @@ uint32 FBristleconeReceiver::Run() {
 			receiver_socket->RecvFrom(received_data.GetData(), received_data.Num(), bytes_read, *targetAddr);
 			
 			memcpy(receiving_state.GetPacket(), received_data.GetData(), bytes_read);
-			long long round_trip_time = std::chrono::steady_clock::now().time_since_epoch().count() - receiving_state.GetTransferTime();
-			UE_LOG(LogTemp, Warning, TEXT("@ Received, %lld, %lld"), receiving_state.GetTransferTime(), round_trip_time);
+			//this & logging are VERY slow, like potentially reordering our perceived timings slow. We need to be careful as hell interacting
+			//with time and logging, since we're now operating in the lock-sensitive time regime. we'll need a solution.
+			long long round_trip_time = std::chrono::steady_clock::now().time_since_epoch().count() - receiving_state.GetSendTimeStamp();
+			UE_LOG(LogTemp, Warning, TEXT("@, Received, %lld, %lld"), receiving_state.GetSendTimeStamp(), round_trip_time);
 		}
 
 		receiver_socket.IsValid() ? receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f) : 0;

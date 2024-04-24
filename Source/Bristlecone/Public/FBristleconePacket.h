@@ -35,7 +35,7 @@ public:
 		return &packet;
 	}
 
-	long long GetTransferTime() const {
+	long long GetSendTimeStamp() const {
 		return packet.GetTransferTime();
 	}
 
