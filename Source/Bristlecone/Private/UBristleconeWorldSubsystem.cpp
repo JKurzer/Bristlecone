@@ -30,7 +30,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 10);
 		socketHigh = MakeShareable(socket_factory.Build());
 		socketLow = MakeShareable(socket_factory.Build());
-		socketAdaptive = MakeShareable(socket_factory.Build());
+		socketBackground = MakeShareable(socket_factory.Build());
 
 
 		//Get config and start sender thread
@@ -38,7 +38,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		//TODO: refactor this to allow proper data driven construction.
 		FString address = ConfigVals->default_address.IsEmpty() ? "100.25.169.113" : ConfigVals->default_address;
 		sender_runner.AddTargetAddress(address);
-		sender_runner.SetLocalSockets(socketHigh, socketLow, socketAdaptive);
+		sender_runner.SetLocalSockets(socketHigh, socketLow, socketBackground);
 		sender_runner.ActivateDSCP();
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
@@ -64,12 +64,12 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 	if (socketLow.IsValid()) {
 		socketLow.Get()->Close();
 	}
-	if (socketAdaptive.IsValid()) {
-		socketAdaptive.Get()->Close();
+	if (socketBackground.IsValid()) {
+		socketBackground.Get()->Close();
 	}
 	socketHigh = nullptr;
 	socketLow = nullptr;
-	socketAdaptive = nullptr;
+	socketBackground = nullptr;
 
 	//this will all need to be refactored, but tbh, I'm not sure we'll keep this for long enough to do it.
 	FSocket* sender_socket_obj = socketHigh.Get();
@@ -80,7 +80,7 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 	if (sender_socket_obj != nullptr) {
 		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(sender_socket_obj);
 	}
-	sender_socket_obj = socketAdaptive.Get();
+	sender_socket_obj = socketBackground.Get();
 	if (sender_socket_obj != nullptr) {
 		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(sender_socket_obj);
 	}

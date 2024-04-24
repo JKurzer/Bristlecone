@@ -46,7 +46,7 @@ void FBristleconeSender::SetLocalSockets(
 ) {
 	sender_socket_high = new_socket_high;
 	sender_socket_low = new_socket_low;
-	sender_socket_adaptive = new_socket_adaptive;
+	sender_socket_background = new_socket_adaptive;
 }
 
 void FBristleconeSender::ActivateDSCP()
@@ -87,14 +87,14 @@ void FBristleconeSender::ActivateDSCP()
 	//our build mechanism has to break encapsulation pretty aggressively to resolve this, and it's quite ugly.
 	SOCKET underlyingHigh = ((FSocketBSD*)(sender_socket_high.Get()))->GetNativeSocket();// Time to go for a very bad ride.
 	SOCKET underlyingLow = ((FSocketBSD*)(sender_socket_low.Get()))->GetNativeSocket();
-	SOCKET underlyingAdaptive = ((FSocketBSD*)(sender_socket_adaptive.Get()))->GetNativeSocket();
+	SOCKET underlyingSPICY = ((FSocketBSD*)(sender_socket_background.Get()))->GetNativeSocket();
 	//qwave MAY need destination and point. as a result, we had to wait to perform this until now.
 
 	QOSAddSocketToFlow(QoSHandle, underlyingHigh, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeControl, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
 	QOSAddSocketToFlow(QoSHandle, underlyingLow, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeControl, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
-	QOSAddSocketToFlow(QoSHandle, underlyingAdaptive, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeExcellentEffort, 0, &QoSFlowId);
+	QOSAddSocketToFlow(QoSHandle, underlyingSPICY, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeControl, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 #endif
 }
 
@@ -123,14 +123,13 @@ uint32 FBristleconeSender::Run() {
 
 			bool packet_sent = sender_socket_high->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 														   bytes_sent, *endpoint.ToInternetAddr());
-			
+
 			packet_sent = sender_socket_low->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 				bytes_sent, *endpoint.ToInternetAddr());
-			
-			packet_sent = sender_socket_adaptive->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
+
+			packet_sent = sender_socket_background->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 				bytes_sent, *endpoint.ToInternetAddr());
-			UE_LOG(LogTemp, Warning, TEXT("Sent messages: %s : %s : Address - %s : BytesSent - %d"), *current_controller_state->ToString(),
-				(packet_sent ? TEXT("true") : TEXT("false")), *endpoint.ToString(), bytes_sent);
+
 
 			if (bytes_sent == 0) {
 				consecutive_zero_bytes_sent++;
@@ -159,7 +158,7 @@ void FBristleconeSender::Stop() {
 void FBristleconeSender::Cleanup() {
 	sender_socket_high = nullptr;
 	sender_socket_low = nullptr;
-	sender_socket_adaptive = nullptr;
+	sender_socket_background = nullptr;
 	const ISocketSubsystem* socket_subsystem_obj = socket_subsystem.Release();
 	if (socket_subsystem_obj != nullptr) {
 		socket_subsystem_obj = nullptr;

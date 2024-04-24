@@ -33,7 +33,7 @@ private:
 	
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_high;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_low;
-	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_adaptive;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_background;
 	TArray<FIPv4Endpoint> target_endpoints;
 
 	TUniquePtr<ISocketSubsystem> socket_subsystem;

@@ -37,7 +37,7 @@ protected:
 	UBristleconeConstants* ConfigVals;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketHigh;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketLow;
-	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketAdaptive;
+	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketBackground;
 	
 	// Sender information
   	FBristleconeSender sender_runner;
