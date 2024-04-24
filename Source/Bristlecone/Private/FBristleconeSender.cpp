@@ -90,11 +90,11 @@ void FBristleconeSender::ActivateDSCP()
 	SOCKET underlyingSPICY = ((FSocketBSD*)(sender_socket_background.Get()))->GetNativeSocket();
 	//qwave MAY need destination and point. as a result, we had to wait to perform this until now.
 
-	QOSAddSocketToFlow(QoSHandle, underlyingHigh, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeControl, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
+	QOSAddSocketToFlow(QoSHandle, underlyingHigh, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeAudioVideo, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
-	QOSAddSocketToFlow(QoSHandle, underlyingLow, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeControl, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
+	QOSAddSocketToFlow(QoSHandle, underlyingLow, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeExcellentEffort, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
-	QOSAddSocketToFlow(QoSHandle, underlyingSPICY, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeControl, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
+	QOSAddSocketToFlow(QoSHandle, underlyingSPICY, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeBestEffort, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 #endif
 }
 
@@ -115,18 +115,15 @@ uint32 FBristleconeSender::Run() {
 		counter++;
 		sending_state.controller_arr[0] = counter;
 		packet_container.InsertNewDatagram(&sending_state);
-		
+		long long tick = 0;
 		for (auto& endpoint : target_endpoints) {
 			int32 bytes_sent;
-
+			//we may want a mode to timestamp each individual packet during testing so we can get a unique rtt
 			const FControllerStatePacket* current_controller_state = packet_container.GetPacket();
-
 			bool packet_sent = sender_socket_high->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 														   bytes_sent, *endpoint.ToInternetAddr());
-
 			packet_sent = sender_socket_low->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 				bytes_sent, *endpoint.ToInternetAddr());
-
 			packet_sent = sender_socket_background->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
 				bytes_sent, *endpoint.ToInternetAddr());
 

@@ -72,6 +72,10 @@ public:
 		transfer_time = std::chrono::steady_clock::now().time_since_epoch().count();
 	}
 
+	void UpdateTransferTime(long long forceTimeStamp) {
+		transfer_time = forceTimeStamp;
+	}
+
 	CLONE_TYPE* GetPointerToElement(uint32 element_index) {
 		return &clone_array[element_index];
 	}

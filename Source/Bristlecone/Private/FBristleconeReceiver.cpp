@@ -44,7 +44,7 @@ uint32 FBristleconeReceiver::Run() {
 			UE_LOG(LogTemp, Warning, TEXT("@ Received, %lld, %lld"), receiving_state.GetTransferTime(), round_trip_time);
 		}
 
-		receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f);
+		receiver_socket.IsValid() ? receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f) : 0;
 	}
 	
 	return 0;
