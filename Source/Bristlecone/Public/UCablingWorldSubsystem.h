@@ -7,12 +7,6 @@
 #include "FCabling.h"
 #include "HAL/Runnable.h"
 #include "Containers/CircularQueue.h"
-THIRD_PARTY_INCLUDES_START
-#include <concrt.h>
-
-#include "winrt/Windows.Gaming.Input.h"
-THIRD_PARTY_INCLUDES_END
-namespace RawInput = winrt::Windows::Gaming::Input;
 #include "UCablingWorldSubsystem.generated.h"
 
 
@@ -40,7 +34,7 @@ protected:
 	// Receiver information
 
 	FCabling controller_runner;
-	TSharedPtr<TCircularQueue<RawInput::GamepadReading>> GameThreadControlQueue;
-	TSharedPtr<TCircularQueue<RawInput::GamepadReading>> CabledThreadControlQueue;
+	//TSharedPtr<TCircularQueue<RawInput::GamepadReading>> GameThreadControlQueue;
+	//TSharedPtr<TCircularQueue<RawInput::GamepadReading>> CabledThreadControlQueue;
 	TUniquePtr<FRunnableThread> controller_thread;
 };

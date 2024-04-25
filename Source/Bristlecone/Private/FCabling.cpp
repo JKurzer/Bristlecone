@@ -18,34 +18,11 @@ bool FCabling::Init() {
 	return true;
 }
 
-uint32 FCabling::AddPad(winrt::Windows::Foundation::IInspectable const&, RawishInput::Gamepad const& addedController)
-{
-
-	concurrency::critical_section::scoped_lock{ controllerSetLock };
-	if (myGamepads.find(addedController) == myGamepads.end())
-	{
-		myGamepads.insert(addedController);
-	}
-	return 0;
-}
-
-uint32 FCabling::DropPad(winrt::Windows::Foundation::IInspectable const&, RawishInput::Gamepad const& droppedcontroller)
-{
-	concurrency::critical_section::scoped_lock{ controllerSetLock };
-	if (myGamepads.find(droppedcontroller) == myGamepads.end()) //contains was reading as absent, odd given that we should be on C++20.
-	{
-		myGamepads.erase(droppedcontroller);
-	}
-	return 0;
-}
 
 
 uint32 FCabling::Run() {
 	
-	RawishInput::Gamepad::GamepadAdded({ this,&FCabling::AddPad});
-	RawishInput::Gamepad::GamepadRemoved({ this,&FCabling::DropPad});
 	
-	const RawishInput::Gamepad* current = nullptr;
 	bool sent = false;
 	int seqNumber = 0;
 	uint64_t priorReading = 0;
@@ -56,12 +33,12 @@ uint32 FCabling::Run() {
 		if((seqNumber%512) == 500)
 		{
 			//this is was indeed unsafe.
-			concurrency::critical_section::scoped_lock{ controllerSetLock };
-			current = myGamepads.empty() ? nullptr : &(*myGamepads.begin()); //this needs to be revised.
+			//concurrency::critical_section::scoped_lock{ controllerSetLock };
+			// current = myGamepads.empty() ? nullptr : &(*myGamepads.begin()); //this needs to be revised.
 		}
 
 		//game pad reading
-		if (current != nullptr)
+		if (false)///current != nullptr)
 		{
 			if (!sent)
 			{
@@ -70,18 +47,17 @@ uint32 FCabling::Run() {
 				//because winrt is basically unmaintained and doesn't work unless you have both a window and a message pump
 				//since those are exactly what we wanna avoid, welp.... RIP AND TEAR.
 				//this is why we fucking encapsulated this, though.
-				RawishInput::GamepadReading cur = current->GetCurrentReading();
-				FCableInputPacker boxing;
-				boxing.lx = boxing.IntegerizedStick(cur.LeftThumbstickX);
-				//these are coming up empty.
-				boxing.ly = boxing.IntegerizedStick(cur.LeftThumbstickY);
-				boxing.rx = boxing.IntegerizedStick(cur.RightThumbstickX);
-				boxing.ry = boxing.IntegerizedStick(cur.RightThumbstickY);
-				boxing.buttons = (uint32_t)cur.Buttons;
-				boxing.buttons.set(12, (cur.LeftTrigger > 0.5)); //check the bitfield.
-				boxing.buttons.set(13, (cur.RightTrigger > 0.5));
-				boxing.events = boxing.events.none();
-				uint64_t currentRead = boxing.PackImpl();
+				//FCableInputPacker boxing;
+				//boxing.lx = boxing.IntegerizedStick(cur.LeftThumbstickX);
+				////these are coming up empty.
+				//boxing.ly = boxing.IntegerizedStick(cur.LeftThumbstickY);
+				//boxing.rx = boxing.IntegerizedStick(cur.RightThumbstickX);
+				//boxing.ry = boxing.IntegerizedStick(cur.RightThumbstickY);
+				//boxing.buttons = (uint32_t)cur.Buttons;
+				//boxing.buttons.set(12, (cur.LeftTrigger > 0.5)); //check the bitfield.
+				//boxing.buttons.set(13, (cur.RightTrigger > 0.5));
+				//boxing.events = boxing.events.none();
+				//uint64_t currentRead = boxing.PackImpl();
 				/*
 				current = current	<< 1;
 				current |= (cur.RightTrigger > 0.5);
@@ -93,11 +69,11 @@ uint32 FCabling::Run() {
 				current = current << 10;
 				*/
 				//events go here.
-				if ((seqNumber % 4) == 0 || (currentRead != priorReading))
+				if ((seqNumber % 4) == 0 )//|| (currentRead != priorReading))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("@, Received,  %lld"), currentRead);
+					//UE_LOG(LogTemp, Warning, TEXT("@, Received,  %lld"), currentRead);
 				}
-				priorReading = currentRead;
+				//priorReading = currentRead;
 			}		
 		}
 		
