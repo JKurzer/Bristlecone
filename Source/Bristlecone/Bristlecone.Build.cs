@@ -19,7 +19,16 @@ public class Bristlecone : ModuleRules
 		PublicAdditionalLibraries.Add("qwave.lib"); // this will need to be fixed. god.
 
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Networking", "Sockets" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"Networking",
+			"Sockets",
+			"DeveloperSettings",
+			"GameInputBase"
+		});
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]

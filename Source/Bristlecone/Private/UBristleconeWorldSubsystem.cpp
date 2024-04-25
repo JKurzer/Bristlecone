@@ -4,12 +4,6 @@
 #include "UBristleconeWorldSubsystem.h"
 
 #include "Common/UdpSocketBuilder.h"
-THIRD_PARTY_INCLUDES_START
-#include <concrt.h>
-
-#include "winrt/Windows.Gaming.Input.h"
-THIRD_PARTY_INCLUDES_END
-namespace RawInput = winrt::Windows::Gaming::Input;
 
 void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
