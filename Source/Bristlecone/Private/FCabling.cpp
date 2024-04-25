@@ -41,17 +41,19 @@ uint32 FCabling::DropPad(winrt::Windows::Foundation::IInspectable const&, Rawish
 
 
 uint32 FCabling::Run() {
-	int ticktrack = 0;
 	
 	RawishInput::Gamepad::GamepadAdded({ this,&FCabling::AddPad});
 	RawishInput::Gamepad::GamepadRemoved({ this,&FCabling::DropPad});
 	
 	const RawishInput::Gamepad* current = nullptr;
+	bool sent = false;
+	int seqNumber = 0;
+	uint64_t priorReading = 0;
+
 	while (running)
 	{
 		
-		ticktrack = (ticktrack + 1) % 512;
-		if(ticktrack == 500)
+		if((seqNumber%512) == 500)
 		{
 			//this is likely to be unsafe. I need to check what a disconnected gamepad actually looks like. is it null?
 			//unless you use really broad locking, I don't see how you can avoid getting into trouble if so.
@@ -62,8 +64,39 @@ uint32 FCabling::Run() {
 		//game pad reading
 		if (current != nullptr)
 		{
-			RawishInput::GamepadReading cur = current->GetCurrentReading();
+			if (!sent)
+			{
+				RawishInput::GamepadReading cur = current->GetCurrentReading();
+				FCableInputPacker boxing;
+				boxing.lx = boxing.IntegerizedStick(cur.LeftThumbstickX);
+				boxing.ly = boxing.IntegerizedStick(cur.LeftThumbstickY);
+				boxing.rx = boxing.IntegerizedStick(cur.RightThumbstickX);
+				boxing.ry = boxing.IntegerizedStick(cur.RightThumbstickY);
+				boxing.buttons = (uint32_t)cur.Buttons;
+				boxing.buttons.set(12, (cur.LeftTrigger > 0.5)); //check the bitfield.
+				boxing.buttons.set(13, (cur.RightTrigger > 0.5));
+				boxing.events = boxing.events.none();
+				uint64_t currentRead = boxing.PackImpl();
+				/*
+				current = current	<< 1;
+				current |= (cur.RightTrigger > 0.5);
+				current = current	<< 1;
+				current |= (cur.LeftTrigger	 > 0.5);
+				current = current << 14;
+				current |= (uint32_t)cur.Buttons; // upcast to uint, we use their ordering. then mask away the paddles.
+				current &= 0b00000000000000000011111111111111;	//00000000 00000000 00111111 11111111
+				current = current << 10;
+				*/
+				//events go here.
+				if ((seqNumber % 4) == 0 || (currentRead != priorReading))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("@, Received,  %lld"), currentRead);
+				}
+				priorReading = currentRead;
+			}		
 		}
+		
+
 		//obv, we'll need some way to figure out WHICH pad. elided for now!
 		//disconnected pads is actually easy, that's handled by the api.
 		//oddly though, it's hard to figure out a good heuristic for pads that
@@ -79,7 +112,13 @@ uint32 FCabling::Run() {
 		//only plan to transmit at about 120hz. We're just sampling often to try to catch input
 		//as early as we can. We can also make use of highly granular movement to do some
 		//input prediction. That gets easier the more granularity you have.
+		++seqNumber;
+		if((seqNumber % 4) == 0)
+		{
+			sent = false;
+		}
 		FPlatformProcess::Sleep(1.0f / 512); 
+
 	}
 	return 0;
 }

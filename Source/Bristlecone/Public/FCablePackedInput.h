@@ -20,22 +20,23 @@
 //10 bits, Right Stick	X
 //10 bits, Right Stick	Y
 //
+//Buttons, please read:
 //1 bit per button
-//in order
-//4 bits: 
-//A, B, X, Y
-//
-//4 bits:
-//Left Shoulder, 
-//Left Trigger (Reduced to button-like),
-//Right Shoulder,
-//Right Trigger (reduced to button-like)
-//
-//4 bits:
-//Dup, Dleft, Ddown, Dright
-//
-//2 bits:
-//Menu, start
+//in LOWEST TO HIGHEST order
+// Menu ,
+// View 
+// A,
+// B,
+// X,
+// Y,
+// DPadUp,
+// DPadDown,
+// DPadLeft,
+// DPadRight,
+// LeftShoulder,
+// RightShoulder,
+// LeftTrigger,
+// RightTrigger,
 // 
 //10 bits:
 //Events

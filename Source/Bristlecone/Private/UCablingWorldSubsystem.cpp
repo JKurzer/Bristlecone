@@ -12,7 +12,7 @@
 //This is because XB1+ Controllers have a max sample rate of 120.
 //If we don't have a new input after 3 polls, we ship the old one.
 // 
-//We only ship 120 inputs per second, so we'll need to do something about this.
+//We only ship 128 inputs per second, so we'll need to do something about this.
 void UCablingWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
 
@@ -22,8 +22,7 @@ void UCablingWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 void UCablingWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 	if ([[maybe_unused]] const UWorld* World = InWorld.GetWorld()) {
 		UE_LOG(LogTemp, Warning, TEXT("UCablingWorldSubsystem: World beginning play"));
-
-	
+		controller_thread.Reset(FRunnableThread::Create(&controller_runner, TEXT("Bristlecone.Sender")));
 	}
 }
 
@@ -39,5 +38,5 @@ void UCablingWorldSubsystem::Tick(float DeltaTime) {
 }
 
 TStatId UCablingWorldSubsystem::GetStatId() const {
-	RETURN_QUICK_DECLARE_CYCLE_STAT(UFBristleconeWorldSubsystem, STATGROUP_Tickables);
+	RETURN_QUICK_DECLARE_CYCLE_STAT(UFCablingWorldSubsystem, STATGROUP_Tickables);
 }

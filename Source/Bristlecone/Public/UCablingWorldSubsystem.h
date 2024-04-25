@@ -39,8 +39,8 @@ protected:
 
 	// Receiver information
 
-	FCabling control_runner;
+	FCabling controller_runner;
 	TSharedPtr<TCircularQueue<RawInput::GamepadReading>> GameThreadControlQueue;
 	TSharedPtr<TCircularQueue<RawInput::GamepadReading>> CabledThreadControlQueue;
-	TUniquePtr<FRunnableThread> receiver_thread;
+	TUniquePtr<FRunnableThread> controller_thread;
 };
