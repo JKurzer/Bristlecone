@@ -55,8 +55,7 @@ uint32 FCabling::Run() {
 		
 		if((seqNumber%512) == 500)
 		{
-			//this is likely to be unsafe. I need to check what a disconnected gamepad actually looks like. is it null?
-			//unless you use really broad locking, I don't see how you can avoid getting into trouble if so.
+			//this is was indeed unsafe.
 			concurrency::critical_section::scoped_lock{ controllerSetLock };
 			current = myGamepads.empty() ? nullptr : &(*myGamepads.begin()); //this needs to be revised.
 		}
@@ -66,9 +65,15 @@ uint32 FCabling::Run() {
 		{
 			if (!sent)
 			{
+				//TODO: all of this needs to swap to 
+				//https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/input/overviews/input-overview
+				//because winrt is basically unmaintained and doesn't work unless you have both a window and a message pump
+				//since those are exactly what we wanna avoid, welp.... RIP AND TEAR.
+				//this is why we fucking encapsulated this, though.
 				RawishInput::GamepadReading cur = current->GetCurrentReading();
 				FCableInputPacker boxing;
 				boxing.lx = boxing.IntegerizedStick(cur.LeftThumbstickX);
+				//these are coming up empty.
 				boxing.ly = boxing.IntegerizedStick(cur.LeftThumbstickY);
 				boxing.rx = boxing.IntegerizedStick(cur.RightThumbstickX);
 				boxing.ry = boxing.IntegerizedStick(cur.RightThumbstickY);
