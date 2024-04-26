@@ -4,6 +4,8 @@ THIRD_PARTY_INCLUDES_START
 #include "GameInput.h"
 #include "Microsoft/HideMicrosoftPlatformTypes.h"
 THIRD_PARTY_INCLUDES_END
+#include <bitset>
+using std::bitset;
 
 FCabling::FCabling()
 : running(false) {
@@ -33,7 +35,7 @@ uint32 FCabling::Run() {
 	bool sent = false;
 	int seqNumber = 0;
 	uint64_t priorReading = 0;
-
+	uint64_t currentRead = 0;
 	//We're using the GameInput lib.
 	//https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/input/overviews/input-overview
 	while (running)
@@ -64,21 +66,30 @@ uint32 FCabling::Run() {
 			if (!sent)
 			{
 				FCableInputPacker boxing;
+				//very fun story. unless you explicitly import and use std::bitset
+				//the wrong thing happens here. I'm not going to speculate on why, because
+				//I don't think I can do so without swearing extensively.
 				boxing.lx = boxing.IntegerizedStick(state.leftThumbstickX);
 				boxing.ly = boxing.IntegerizedStick(state.leftThumbstickY);
+				UE_LOG(LogTemp, Warning, TEXT("@, LY Input,  %f"), state.leftThumbstickY);
+				UE_LOG(LogTemp, Warning, TEXT("@, LY Integerized,  %lld"), boxing.ly.to_ulong());
 				boxing.rx = boxing.IntegerizedStick(state.rightThumbstickX);
 				boxing.ry = boxing.IntegerizedStick(state.rightThumbstickY);
 				boxing.buttons = (uint32_t)state.buttons; //strikingly, there's no paddle field.
+				UE_LOG(LogTemp, Warning, TEXT("@, Buttons,  %lld"), state.buttons);
+				UE_LOG(LogTemp, Warning, TEXT("@, Boxing Bitfield Buttons,  %lld"), boxing.buttons.to_ullong());
 				boxing.buttons.set(12, (state.leftTrigger > 0.5)); //check the bitfield.
 				boxing.buttons.set(13, (state.rightTrigger > 0.5));
 				boxing.events = boxing.events.none();
-				uint64_t currentRead = boxing.PackImpl();
+				currentRead = boxing.PackImpl();
 
 				if ((seqNumber % 4) == 0 || (currentRead != priorReading))
 				{
 					//push to both queues.
+					this->CabledThreadControlQueue.Get()->Enqueue(currentRead);
+					this->GameThreadControlQueue.Get()->Enqueue(currentRead);
 					//wake bristlecone
-					UE_LOG(LogTemp, Warning, TEXT("@, Received,  %lld"), currentRead);
+					UE_LOG(LogTemp, Warning, TEXT("@, Packed Controller State,  %lld"), currentRead);
 				}
 				priorReading = currentRead;
 			}
@@ -115,7 +126,6 @@ void FCabling::Stop() {
 }
 
 void FCabling::Cleanup() {
-
 	running = false;
 }
 

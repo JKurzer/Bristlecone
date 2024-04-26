@@ -56,23 +56,23 @@ public:
 	{
 		uint64_t box = 0;
 
-		box &= lx.to_ullong();
+		box |= lx.to_ullong();
 		
 		box <<= ly.size();
-		box &= ly.to_ullong();
+		box |= ly.to_ullong();
 
 		box <<= rx.size();
-		box &= rx.to_ullong();
+		box |= rx.to_ullong();
 
 		box <<= ry.size();
-		box &= ry.to_ullong();
+		box |= ry.to_ullong();
 
 
 		box <<= buttons.size();
-		box &= buttons.to_ullong();
+		box |= buttons.to_ullong();
 
 		box <<= events.size();
-		box &= events.to_ullong();
+		box |= events.to_ullong();
 
 		return box;
 	}

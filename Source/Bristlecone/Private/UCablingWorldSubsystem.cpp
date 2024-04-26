@@ -15,13 +15,16 @@
 //We only ship 128 inputs per second, so we'll need to do something about this.
 void UCablingWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
-
+	GameThreadControlQueue = MakeShareable(new TCircularQueue<uint64_t>(256));
+	CabledThreadControlQueue = MakeShareable(new TCircularQueue<uint64_t>(256));
 	UE_LOG(LogTemp, Warning, TEXT("UCablingWorldSubsystem: Subsystem world initialized"));
 }
 
 void UCablingWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 	if ([[maybe_unused]] const UWorld* World = InWorld.GetWorld()) {
 		UE_LOG(LogTemp, Warning, TEXT("UCablingWorldSubsystem: World beginning play"));
+		controller_runner.CabledThreadControlQueue = this->CabledThreadControlQueue;
+		controller_runner.GameThreadControlQueue = this->GameThreadControlQueue;
 		controller_thread.Reset(FRunnableThread::Create(&controller_runner, TEXT("Bristlecone.Sender")));
 	}
 }

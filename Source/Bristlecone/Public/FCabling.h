@@ -4,6 +4,8 @@
 #include "FBristleconePackingSystemShim.h"
 #include "FCablePackedInput.h"
 
+#include "Containers/CircularQueue.h"
+
 
 //why do it this way?
 //well, unfortunately, input in UE runs through the event loop.
@@ -22,9 +24,11 @@ public:
 	virtual uint32 Run() override;
 	virtual void Exit() override;
 	virtual void Stop() override;
+
+	TSharedPtr<TCircularQueue<uint64_t>> GameThreadControlQueue;
+	TSharedPtr<TCircularQueue<uint64_t>> CabledThreadControlQueue;
 private:
 	void Cleanup();
-
 
 	
 	bool running;
