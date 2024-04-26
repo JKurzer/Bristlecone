@@ -40,8 +40,11 @@ public class Bristlecone : ModuleRules
     public Bristlecone(ReadOnlyTargetRules Target) : base(Target)
     {
         bool bHasGameInputSupport = HasGameInputSupport(Target);
+        System.Console.WriteLine("Known support: " + bHasGameInputSupport);
         string gdkpath = Path.Combine(PluginDirectory, "GDKDependency", "GameKit", "Include");
         PrivateIncludePaths.Add(gdkpath);
+        string gdklibpath = Path.Combine(PluginDirectory, "GDKDependency", "GameKit", "Lib", "amd64", "GameInput.lib");
+        PublicAdditionalLibraries.Add(gdklibpath);
 
         //may also need to add an explicit runtime dependency.
         // Get the engine path. Ends with "Engine/"
