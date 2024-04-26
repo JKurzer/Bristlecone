@@ -39,7 +39,8 @@ protected:
 
 public:
 	// In and out queues allowing one producer and one consumer.
-	// Subsystems should provide allocated queues. Bristlecone does not, and will not run if nothing binds.
+	// Subsystems should provide allocated queues. Bristlecone only provides for receives,
+	// and will not run if nothing binds the source queue "QueueToSend."
 	// 
 	//Inbound is produced by another subsystem that is responsible for creating and owning the queue lifecycle
 	//It is consumed by the sender thread. Input is expected to be 8 byte packets at 120hz. 
