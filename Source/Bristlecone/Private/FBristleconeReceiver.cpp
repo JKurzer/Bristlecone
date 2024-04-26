@@ -33,7 +33,7 @@ uint32 FBristleconeReceiver::Run() {
 		FBristleconePacketContainer<FControllerState, 3> receiving_state;
 	
 		uint32 socket_data_size;
-		while (receiver_socket->HasPendingData(socket_data_size)) {
+		while (receiver_socket.IsValid() && receiver_socket->HasPendingData(socket_data_size)) {
 			int32 bytes_read = 0;
 			
 			received_data.SetNumUninitialized(FMath::Min(socket_data_size, 65507u));

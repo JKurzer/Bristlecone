@@ -79,6 +79,12 @@ uint32 FCabling::Run() {
 				boxing.events = boxing.events.none();
 				currentRead = boxing.PackImpl();
 
+				//because we deadzone and integerize, we actually have a pretty good idea
+				//of when input actually changes. 2048 positions for the stick along each axis
+				//actually looks like it's enough to give us precise movement while still
+				//excising some amount of jitter. Because we always round down, you have to move
+				//fully to a new position and this seems to be a larger delta than the average
+				//heart-rate jitter or control noise.
 				if ((seqNumber % 4) == 0 || (currentRead != priorReading))
 				{
 					//push to both queues.
@@ -86,8 +92,6 @@ uint32 FCabling::Run() {
 					this->GameThreadControlQueue.Get()->Enqueue(currentRead);
 
 					//wake bristlecone
-					
-					UE_LOG(LogTemp, Warning, TEXT("@, Packed Controller State,  %lld"), currentRead);
 				}
 				priorReading = currentRead;
 			}
