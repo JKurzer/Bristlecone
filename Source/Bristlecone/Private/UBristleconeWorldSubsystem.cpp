@@ -7,13 +7,28 @@
 
 void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
-
+	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Inbound and Outbound Queues set to null."));
+	QueueOfReceived = nullptr;
+	QueueToSend = nullptr;
+	SelfBind = nullptr;
+	UE_LOG(LogTemp, Warning, TEXT("BCN will not start unless another subsystem creates and binds queues during PostInitialize."));
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world initialized"));
 }
 
 void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
-	if ([[maybe_unused]] const UWorld* World = InWorld.GetWorld()) {
+	if ([[maybe_unused]] const UWorld* World = InWorld.GetWorld() ){
 		UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: World beginning play"));
+		if (!QueueToSend.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Inbound queue not allocated. Threads will not start."));
+			return;
+		}
+		if (!QueueOfReceived.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: No bind for received queue. Self-binding for debug."));
+			QueueOfReceived = MakeShareable(new PacketQ(256));
+			SelfBind = QueueOfReceived;
+		}
 
 		local_endpoint = FIPv4Endpoint(FIPv4Address::Any, DEFAULT_PORT);
 		FUdpSocketBuilder socket_factory = FUdpSocketBuilder(TEXT("Bristlecone.Receiver.Socket"))
@@ -32,12 +47,14 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		//TODO: refactor this to allow proper data driven construction.
 		FString address = ConfigVals->default_address.IsEmpty() ? "100.25.169.113" : ConfigVals->default_address;
 		sender_runner.AddTargetAddress(address);
+		sender_runner.BindSource(QueueToSend);
 		sender_runner.SetLocalSockets(socketHigh, socketLow, socketBackground);
 		sender_runner.ActivateDSCP();
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
 		// Start receiver thread
 		receiver_runner.SetLocalSocket(socketHigh);
+		receiver_runner.BindSink(QueueOfReceived);
 		receiver_thread.Reset(FRunnableThread::Create(&receiver_runner, TEXT("Bristlecone.Receiver")));
 	}
 }
@@ -86,6 +103,15 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 
 void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+
+	if (SelfBind.IsValid())
+	{
+		while (!SelfBind->IsEmpty())
+		{
+			const Packet_tpl* current = SelfBind->Peek();
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone SelfBind Control Pipeline: %lld", current->GetTransferTime()));
+		}
+	}
 	//UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world ticked"));
 }
 

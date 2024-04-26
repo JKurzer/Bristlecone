@@ -2,12 +2,18 @@
 
 #include "FControllerState.h"
 #include "SocketSubsystem.h"
-#include "UBristleconeWorldSubsystem.h"
 #include "Common/UdpSocketBuilder.h"
 
 FBristleconeReceiver::FBristleconeReceiver() : running(false) {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Receiver: Constructing Bristlecone Receiver"));
 }
+
+void FBristleconeReceiver::BindSink(UBristleconeWorldSubsystem::QueueRecvEight QueueCandidate)
+{
+	Queue.Reset();
+	Queue = QueueCandidate;
+}
+
 
 FBristleconeReceiver::~FBristleconeReceiver() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Receiver: Destructing Bristlecone Receiver"));
@@ -42,8 +48,7 @@ uint32 FBristleconeReceiver::Run() {
 			memcpy(receiving_state.GetPacket(), received_data.GetData(), bytes_read);
 			//this & logging are VERY slow, like potentially reordering our perceived timings slow. We need to be careful as hell interacting
 			//with time and logging, since we're now operating in the lock-sensitive time regime. we'll need a solution.
-			long long round_trip_time = std::chrono::steady_clock::now().time_since_epoch().count() - receiving_state.GetSendTimeStamp();
-			UE_LOG(LogTemp, Warning, TEXT("@, Received, %lld, %lld"), receiving_state.GetSendTimeStamp(), round_trip_time);
+			UE_LOG(LogTemp, Warning, TEXT("@, Received Stamp, %lld"), receiving_state.GetSendTimeStamp());
 		}
 
 		receiver_socket.IsValid() ? receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f) : 0;

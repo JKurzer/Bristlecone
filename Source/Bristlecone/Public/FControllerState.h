@@ -3,7 +3,7 @@
 class FControllerState {
 public:
 	// for now just mocking the size
-	int controller_arr[4];
+	char controller_arr[4];
 	
 	FControllerState() {
 		clear();

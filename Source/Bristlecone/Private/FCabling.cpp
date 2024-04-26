@@ -98,11 +98,11 @@ uint32 FCabling::Run() {
 
 
 
-			++seqNumber;
 			if ((seqNumber % 4) == 0)
 			{
 				sent = false;
 			}
+			++seqNumber;
 			FPlatformProcess::Sleep(1.0f / 512);
 		}
 		else if (g_gamepad)

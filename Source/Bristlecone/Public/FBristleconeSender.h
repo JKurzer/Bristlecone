@@ -11,7 +11,7 @@ public:
 	FBristleconeSender();
 	
 	virtual ~FBristleconeSender() override;
-
+	void BindSource(TSharedPtr<TCircularQueue<uint64_t>> InboundQueue);
 	void AddTargetAddress(FString target_address_str);
 	void SetLocalSockets(
 		const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket_high,
@@ -30,14 +30,14 @@ private:
 	void Cleanup();
 
 	FBristleconePacketContainer<FControllerState, 3> packet_container;
-	
+;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_high;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_low;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_background;
 	TArray<FIPv4Endpoint> target_endpoints;
 
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
-
+	TSharedPtr<TCircularQueue<uint64_t>> Queue;
 	uint8 consecutive_zero_bytes_sent;
 
 	bool running;

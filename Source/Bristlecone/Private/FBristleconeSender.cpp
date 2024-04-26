@@ -32,6 +32,12 @@ FBristleconeSender::~FBristleconeSender() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Sender: Destructing Bristlecone Sender"));
 }
 
+void FBristleconeSender::BindInbound(TSharedPtr<TCircularQueue<uint64_t>> QueueCandidate)
+{
+	Queue.Reset();
+	Queue = QueueCandidate;
+}
+
 void FBristleconeSender::AddTargetAddress(FString target_address_str) {
 	FIPv4Address target_address;
 	FIPv4Address::Parse(target_address_str, target_address);
