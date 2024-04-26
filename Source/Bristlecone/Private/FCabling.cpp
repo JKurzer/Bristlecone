@@ -29,7 +29,8 @@ uint32 FCabling::Run() {
 
 	while (running)
 	{
-		
+		// need to solve : LogLoad: (Engine Initialization) Total time: 44.80 seconds
+		// LogGameInput: Error: [FGameInputWindowsModule] Failed to create a GameInput device!GAME_INPUT_SUPPORT is false!
 		if((seqNumber%512) == 500)
 		{
 			//this is was indeed unsafe.
