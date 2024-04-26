@@ -69,17 +69,13 @@ uint32 FCabling::Run() {
 				//very fun story. unless you explicitly import and use std::bitset
 				//the wrong thing happens here. I'm not going to speculate on why, because
 				//I don't think I can do so without swearing extensively.
-				boxing.lx = boxing.IntegerizedStick(state.leftThumbstickX);
-				boxing.ly = boxing.IntegerizedStick(state.leftThumbstickY);
-				UE_LOG(LogTemp, Warning, TEXT("@, LY Input,  %f"), state.leftThumbstickY);
-				UE_LOG(LogTemp, Warning, TEXT("@, LY Integerized,  %lld"), boxing.ly.to_ulong());
-				boxing.rx = boxing.IntegerizedStick(state.rightThumbstickX);
-				boxing.ry = boxing.IntegerizedStick(state.rightThumbstickY);
+				boxing.lx = (uint32_t)boxing.IntegerizedStick(state.leftThumbstickX);
+				boxing.ly = (uint32_t)boxing.IntegerizedStick(state.leftThumbstickY);
+				boxing.rx = (uint32_t)boxing.IntegerizedStick(state.rightThumbstickX);
+				boxing.ry = (uint32_t)boxing.IntegerizedStick(state.rightThumbstickY);
 				boxing.buttons = (uint32_t)state.buttons; //strikingly, there's no paddle field.
-				UE_LOG(LogTemp, Warning, TEXT("@, Buttons,  %lld"), state.buttons);
-				UE_LOG(LogTemp, Warning, TEXT("@, Boxing Bitfield Buttons,  %lld"), boxing.buttons.to_ullong());
-				boxing.buttons.set(12, (state.leftTrigger > 0.5)); //check the bitfield.
-				boxing.buttons.set(13, (state.rightTrigger > 0.5));
+				boxing.buttons.set(12, (state.leftTrigger > 0.55)); //check the bitfield.
+				boxing.buttons.set(13, (state.rightTrigger > 0.55));
 				boxing.events = boxing.events.none();
 				currentRead = boxing.PackImpl();
 
@@ -88,7 +84,9 @@ uint32 FCabling::Run() {
 					//push to both queues.
 					this->CabledThreadControlQueue.Get()->Enqueue(currentRead);
 					this->GameThreadControlQueue.Get()->Enqueue(currentRead);
+
 					//wake bristlecone
+					
 					UE_LOG(LogTemp, Warning, TEXT("@, Packed Controller State,  %lld"), currentRead);
 				}
 				priorReading = currentRead;

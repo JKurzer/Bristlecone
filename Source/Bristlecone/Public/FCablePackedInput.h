@@ -14,11 +14,11 @@
 //
 //MSB[sticks][buttons][Events]LSB
 //integerized:
-//10 bits, Left Stick	X
-//10 bits, Left Stick	Y
+//11 bits, Left Stick	X
+//11 bits, Left Stick	Y
 // 
-//10 bits, Right Stick	X
-//10 bits, Right Stick	Y
+//11 bits, Right Stick	X
+//11 bits, Right Stick	Y
 //
 //Buttons, please read:
 //1 bit per button
@@ -38,18 +38,18 @@
 // LeftTrigger,
 // RightTrigger,
 // 
-//10 bits:
+//6 bits:
 //Events
 // Used as needed.
 // NOTE THIS CLASS IS NOT 8 BYTES
 class FCableInputPacker : Packable8 {
 public:
-	std::bitset<10> lx;
-	std::bitset<10> ly;
-	std::bitset<10> rx;
-	std::bitset<10> ry;
+	std::bitset<11> lx;
+	std::bitset<11> ly;
+	std::bitset<11> rx;
+	std::bitset<11> ry;
 	std::bitset<14> buttons;
-	std::bitset<10> events;
+	std::bitset<6> events;
 	//sums to 64! I counted. Like 30 times.
 	
 	uint64_t PackImpl() override
@@ -77,42 +77,28 @@ public:
 		return box;
 	}
 
-	// do not use this on a double. You will have a bad time.
-	// I did it this way because it was fun. 
-	short IntegerizedStick(float axis)
+	//This needs to be replaced with a standard fp to fixed point routine, or dekker's algorithm.
+	//While I'm fairly sure it "works" okay, I think we lose more precision than we need to
+	//and that it's quite overcomplicated for what it does. To be honest, I can't guarantee that
+	//we aren't accumulating floating point error when we do this, but the good news is that once it's 
+	//packed, we never actually turn it back into a float. Still, as stick values are passed from
+	//client a to client b, this is a serious risk to determinism. this will need to be revised.
+	uint32_t IntegerizedStick(double axis)
 	{
-	#define SIGNSLICE_J (1U << 31)
-	#define LEADING_ONE_J (1U << 23)
-	#define EXPSLICE_J  (0xff << 23)
-	#define MANTSLICE_J (0x7FFFFF) //  grabs the mantissa of a float. We're going to need that where we're going.
-	#define DEBIAS_J (-127)
 	//3/16 is a dyadic rational. it represents exactly in fp, so we'll use it prune
 	//we need a deadzone anyway, and this means we don't need to deal with extremely small floats.
+	//this helps ensure that we don't get hammered on bit corruption from FP rounding,
+	//though we still get it pretty bad.
 	if ((axis <= 0.1875f && axis >= -0.1875f) || (axis > 1.0f || axis < -1.0f))
 	{
 			return 0; // get deadzoned, lmao.
 	}
 
-	//TODO: we really should normalize around the deadzone to recover that part of the range? i think?
 	uint32_t patientNonZero = 0;
-	memcpy(&patientNonZero, &axis, sizeof(axis));
-	uint32_t sign	= (patientNonZero & SIGNSLICE_J);
-	uint32_t exp	= (patientNonZero & EXPSLICE_J) >> 23;
-	//"in order to get the true exponent as defined by the offset-binary representation, 
-	// the offset of 127 has to be subtracted from the stored exponent."
-	exp += DEBIAS_J;
-	uint32_t mant	= (patientNonZero & MANTSLICE_J); //note the implicit leading one is not automatically captured.
-	mant += LEADING_ONE_J; // equivalent to bit-and here. this is now the actual significand.
-
-	//I actually think this line is wrong. Something about the exp shift bugs me. I'm gonna need to sit with it.
-	// for now, it's fine, we aren't moving data around yet, this is just proving the packing out.
-	int16_t box = sign * ((mant >> 12) << exp); // trim to 10 bits of precision then exp, sign, and truncate. i think?
-	//that's intentionally an int32. we're basically going to end up with a number from 512 to -511. I hope.
-	return box;
-	#undef SIGNSLICE_J
-	#undef EXPSLICE_J
-	#undef MANTSLICE_J
-	#undef DEBIAS_J
+	double contaminatedAdjustment = axis * 1024.0f; // this contaminates QUITE A FEW bits. fortunately...
+	int trunc = contaminatedAdjustment; //note this preserves sign as twos complement, so we actually need 11 bits a stick.
+	memcpy(&patientNonZero, &trunc, sizeof(trunc));
+	return patientNonZero;
 	}
 };
 
