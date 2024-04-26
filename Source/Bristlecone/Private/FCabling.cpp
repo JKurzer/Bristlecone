@@ -1,5 +1,9 @@
 ﻿#include "FCabling.h"
-
+THIRD_PARTY_INCLUDES_START
+#include "Microsoft/AllowMicrosoftPlatformTypes.h"
+#include "GameInput.h"
+#include "Microsoft/HideMicrosoftPlatformTypes.h"
+THIRD_PARTY_INCLUDES_END
 
 FCabling::FCabling()
 : running(false) {

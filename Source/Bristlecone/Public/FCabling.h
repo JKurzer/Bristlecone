@@ -3,11 +3,7 @@
 #include "CoreMinimal.h"
 #include "FBristleconePackingSystemShim.h"
 #include "FCablePackedInput.h"
-THIRD_PARTY_INCLUDES_START
-#include "Microsoft/AllowMicrosoftPlatformTypes.h"
-#include <GameInput.h>
-#include "Microsoft/HideMicrosoftPlatformTypes.h"
-THIRD_PARTY_INCLUDES_END
+
 
 //why do it this way?
 //well, unfortunately, input in UE runs through the event loop.
