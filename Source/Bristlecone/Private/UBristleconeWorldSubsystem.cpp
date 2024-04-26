@@ -110,6 +110,7 @@ void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 		{
 			const Packet_tpl* current = SelfBind->Peek();
 			UE_LOG(LogTemp, Warning, TEXT("Bristlecone SelfBind Control Pipeline: %lld", current->GetTransferTime()));
+			SelfBind->Dequeue();
 		}
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world ticked"));
