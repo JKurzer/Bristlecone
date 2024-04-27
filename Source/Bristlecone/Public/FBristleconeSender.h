@@ -2,6 +2,7 @@
 #include "FBristleconePacket.h"
 #include "FControllerState.h"
 #include "Interfaces/IPv4/IPv4Endpoint.h"
+#include "BristleconeCommonTypes.h"
 
 static constexpr uint8 CLONE_SIZE = 3;
 static constexpr uint8 MAX_MIXED_CONSECUTIVE_PACKETS_ALLOWED = 100;
@@ -11,7 +12,7 @@ public:
 	FBristleconeSender();
 	
 	virtual ~FBristleconeSender() override;
-	void BindSource(TSharedPtr<TCircularQueue<uint64_t>> InboundQueue);
+	void BindSource(TheCone::SendQueue Queue);
 	void AddTargetAddress(FString target_address_str);
 	void SetLocalSockets(
 		const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket_high,

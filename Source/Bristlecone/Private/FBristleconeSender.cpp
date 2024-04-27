@@ -9,7 +9,6 @@
 #if PLATFORM_HAS_BSD_SOCKET_FEATURE_WINSOCKETS
 #include "Windows/WindowsHWrapper.h"
 #include "Windows/AllowWindowsPlatformTypes.h"
-
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <qos2.h>
@@ -32,7 +31,7 @@ FBristleconeSender::~FBristleconeSender() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Sender: Destructing Bristlecone Sender"));
 }
 
-void FBristleconeSender::BindInbound(TSharedPtr<TCircularQueue<uint64_t>> QueueCandidate)
+void FBristleconeSender::BindSource(TheCone::SendQueue QueueCandidate)
 {
 	Queue.Reset();
 	Queue = QueueCandidate;

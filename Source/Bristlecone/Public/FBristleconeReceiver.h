@@ -1,12 +1,15 @@
 ﻿#pragma once
 #include "Interfaces/IPv4/IPv4Endpoint.h"
-#include "UBristleconeWorldSubsystem.h"
+#include "FControllerState.h"
+#include "SocketSubsystem.h"
+#include "Common/UdpSocketBuilder.h"
+#include "BristleconeCommonTypes.h"
 
 class FBristleconeReceiver : public FRunnable {
 public:
 	FBristleconeReceiver();
 
-	void BindSink(UBristleconeWorldSubsystem::QueueRecvEight QueueCandidate);
+	void BindSink(TheCone::QueueRecvEight QueueCandidate);
 
 	virtual ~FBristleconeReceiver() override;
 
@@ -22,7 +25,7 @@ private:
 
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> receiver_socket;
 	TArray<uint8> received_data;
-	UBristleconeWorldSubsystem::QueueRecvEight Queue;
+	TheCone::QueueRecvEight Queue;
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
 	bool running;
 };

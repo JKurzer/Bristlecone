@@ -8,21 +8,16 @@
 #include "FBristleconeSender.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "UBristleconeConstants.h"
-#include "Containers/CircularQueue.h"
+#include "BristleconeCommonTypes.h"
 
 //This implementation suffers badly from the general resistance to correct template support
 //in the unreal engine. As a result, this subsystem only supports 8 byte messages.
 //Later, I'll defactor this into a pair of base classes that compose the implementation
 //of UObjects, but for now, I'm leaving it. My use-cases only require the 8byte.
 #include "UBristleconeWorldSubsystem.generated.h"
+using namespace TheCone;
 
 
-typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
-
-static constexpr int CONTROLLER_STATE_PACKET_SIZE = sizeof(FControllerStatePacket);
-static constexpr int DEFAULT_PORT = 40000;
-static constexpr uint16 MAX_TARGET_COUNT = 1;
-static constexpr float SLEEP_TIME_BETWEEN_THREAD_TICKS = 0.016f;
 
 UCLASS()
 class  UBristleconeWorldSubsystem : public UTickableWorldSubsystem
@@ -51,11 +46,9 @@ public:
 	//that you will have both a sender and a receiver for each datagram, but in practice, it happens enough
 	//that I've paired them in this subsystem explicitly. The sender thread produces, this subsystem consumes for now.
 	//Again, only 1p1c patterns are supported by this lockless design. The receiver waits on its socket, not this queue.
-	typedef FBristleconePacket<uint64_t, 3> Packet_tpl;
-	typedef TCircularQueue<Packet_tpl> PacketQ;
-	typedef TSharedPtr<PacketQ> QueueRecvEight;
-	QueueRecvEight QueueOfReceived;
-	QueueRecvEight SelfBind;
+
+	TheCone::QueueRecvEight QueueOfReceived;
+	TheCone::QueueRecvEight SelfBind;
   private:
 	FIPv4Endpoint local_endpoint;
 	UBristleconeConstants* ConfigVals;

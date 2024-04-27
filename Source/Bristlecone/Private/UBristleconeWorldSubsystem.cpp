@@ -26,7 +26,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		if (!QueueOfReceived.IsValid())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: No bind for received queue. Self-binding for debug."));
-			QueueOfReceived = MakeShareable(new PacketQ(256));
+			QueueOfReceived = MakeShareable(new TheCone::PacketQ(256));
 			SelfBind = QueueOfReceived;
 		}
 
@@ -108,8 +108,8 @@ void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 	{
 		while (!SelfBind->IsEmpty())
 		{
-			const Packet_tpl* current = SelfBind->Peek();
-			UE_LOG(LogTemp, Warning, TEXT("Bristlecone SelfBind Control Pipeline: %lld", current->GetTransferTime()));
+			const TheCone::Packet_tpl* current = SelfBind->Peek();
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone SelfBind Control Pipeline: %lld"), current->GetTransferTime());
 			SelfBind->Dequeue();
 		}
 	}
