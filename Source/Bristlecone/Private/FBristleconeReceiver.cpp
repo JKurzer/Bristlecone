@@ -34,7 +34,7 @@ uint32 FBristleconeReceiver::Run() {
 	const TSharedRef<FInternetAddr> targetAddr = socket_subsystem->CreateInternetAddr();
 	
 	while (running && receiver_socket) {
-		FBristleconePacketContainer<FControllerState, 3> receiving_state;
+		TheCone::Packet_tpl receiving_state;
 	
 		uint32 socket_data_size;
 		while (receiver_socket.IsValid() && receiver_socket->HasPendingData(socket_data_size)) {
@@ -43,12 +43,12 @@ uint32 FBristleconeReceiver::Run() {
 			received_data.SetNumUninitialized(FMath::Min(socket_data_size, 65507u));
 			receiver_socket->RecvFrom(received_data.GetData(), received_data.Num(), bytes_read, *targetAddr);
 			
-			memcpy(receiving_state.GetPacket(), received_data.GetData(), bytes_read);
+			memcpy(&receiving_state, received_data.GetData(), bytes_read);
 			//this & logging are VERY slow, like potentially reordering our perceived timings slow. We need to be careful as hell interacting
 			//with time and logging, since we're now operating in the lock-sensitive time regime. we'll need a solution.
 			uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
-			UE_LOG(LogTemp, Warning, TEXT("Bristlecone, %ld"), lsbTime - receiving_state.GetPacket()->GetTransferTime());
-
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone, %ld"), lsbTime - receiving_state.GetTransferTime());
+			Queue.Get()->Enqueue(receiving_state);//this actually provokes a copy, which can be removed, I think, by not doing the mcpy
 		}
 
 		receiver_socket.IsValid() ? receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f) : 0;

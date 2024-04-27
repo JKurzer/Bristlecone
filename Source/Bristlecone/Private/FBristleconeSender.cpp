@@ -134,29 +134,34 @@ uint32 FBristleconeSender::Run() {
 	while(sender_socket_high) {
 		// Update ring array
 		counter++;
-		sending_state.controller_arr[0] = counter;
-		packet_container.InsertNewDatagram(&sending_state);
-		long long tick = 0;
-		for (auto& endpoint : target_endpoints) {
-			int32 bytes_sent;
-			//we may want a mode to timestamp each individual packet during testing so we can get a unique rtt
-			const FControllerStatePacket* current_controller_state = packet_container.GetPacket();
-			bool packet_sent = sender_socket_high->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
-														   bytes_sent, *endpoint.ToInternetAddr());
-			packet_sent = sender_socket_low->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
-				bytes_sent, *endpoint.ToInternetAddr());
-			packet_sent = sender_socket_background->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
-				bytes_sent, *endpoint.ToInternetAddr());
+		//BRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+		while(!Queue.Get()->IsEmpty())
+		{
+			sending_state.controller_arr = *Queue->Peek(); //assign by value or you'll have a bad time.
+			packet_container.InsertNewDatagram(&sending_state);
+
+			for (auto& endpoint : target_endpoints) {
+				int32 bytes_sent;
+				//we may want a mode to timestamp each individual packet during testing so we can get a unique rtt
+				const FControllerStatePacket* current_controller_state = packet_container.GetPacket();
+				bool packet_sent = sender_socket_high->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
+					bytes_sent, *endpoint.ToInternetAddr());
+				packet_sent = sender_socket_low->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
+					bytes_sent, *endpoint.ToInternetAddr());
+				packet_sent = sender_socket_background->SendTo(reinterpret_cast<const uint8*>(current_controller_state), sizeof(FControllerStatePacket),
+					bytes_sent, *endpoint.ToInternetAddr());
 
 
-			if (bytes_sent == 0) {
-				consecutive_zero_bytes_sent++;
-			} else {
-				consecutive_zero_bytes_sent = 0;
+				if (bytes_sent == 0) {
+					consecutive_zero_bytes_sent++;
+				}
+				else {
+					consecutive_zero_bytes_sent = 0;
+				}
+
 			}
-			
+			Queue->Dequeue();
 		}
-
 		FPlatformProcess::Sleep(SLEEP_TIME_BETWEEN_THREAD_TICKS);
 	}
 	
