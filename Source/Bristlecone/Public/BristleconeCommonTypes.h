@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "FBristleconePacket.h"
+#include "FControllerState.h"
 #include "Containers/CircularQueue.h"
 #include <cstdint>
 

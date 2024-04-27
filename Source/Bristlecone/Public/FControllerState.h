@@ -2,8 +2,9 @@
 
 class FControllerState {
 public:
-	// for now just mocking the size
-	char controller_arr[4];
+	// this needs to be defactored but it isn't totally obvious how it SHOULD be set.
+	//this might be a good place to refactor the packing shim for, so that we can inject the type elegantly.
+	char controller_arr[8];
 	
 	FControllerState() {
 		clear();

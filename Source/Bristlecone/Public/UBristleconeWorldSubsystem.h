@@ -47,8 +47,8 @@ public:
 	//that I've paired them in this subsystem explicitly. The sender thread produces, this subsystem consumes for now.
 	//Again, only 1p1c patterns are supported by this lockless design. The receiver waits on its socket, not this queue.
 
-	TheCone::QueueRecvEight QueueOfReceived;
-	TheCone::QueueRecvEight SelfBind;
+	TheCone::RecvQueue QueueOfReceived;
+	TheCone::RecvQueue SelfBind;
   private:
 	FIPv4Endpoint local_endpoint;
 	UBristleconeConstants* ConfigVals;

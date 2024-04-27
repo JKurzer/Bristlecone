@@ -64,15 +64,15 @@ public:
 		memset(clone_array, 0, sizeof(CLONE_TYPE) * CLONE_SIZE);
 	}
 
-	long long GetTransferTime() const {
+	long GetTransferTime() const {
 		return transfer_time;
 	}
 	
 	void UpdateTransferTime() {
-		transfer_time = std::chrono::steady_clock::now().time_since_epoch().count();
+		transfer_time = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
 	}
 
-	void UpdateTransferTime(long long forceTimeStamp) {
+	void UpdateTransferTime(long forceTimeStamp) {
 		transfer_time = forceTimeStamp;
 	}
 
@@ -93,7 +93,7 @@ public:
 
 private:
 	// Packet headers
-	long long transfer_time;
+	long transfer_time;
 	// Data clone
 	CLONE_TYPE clone_array[CLONE_SIZE];
 };

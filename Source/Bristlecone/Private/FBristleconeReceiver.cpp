@@ -6,7 +6,7 @@ FBristleconeReceiver::FBristleconeReceiver() : running(false) {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Receiver: Constructing Bristlecone Receiver"));
 }
 
-void FBristleconeReceiver::BindSink(TheCone::QueueRecvEight QueueCandidate)
+void FBristleconeReceiver::BindSink(TheCone::RecvQueue QueueCandidate)
 {
 	Queue.Reset();
 	Queue = QueueCandidate;
