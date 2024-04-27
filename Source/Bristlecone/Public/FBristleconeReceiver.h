@@ -9,7 +9,7 @@ class FBristleconeReceiver : public FRunnable {
 public:
 	FBristleconeReceiver();
 
-	void BindSink(TheCone::QueueRecvEight QueueCandidate);
+	void BindSink(TheCone::RecvQueue QueueCandidate);
 
 	virtual ~FBristleconeReceiver() override;
 
@@ -25,7 +25,7 @@ private:
 
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> receiver_socket;
 	TArray<uint8> received_data;
-	TheCone::QueueRecvEight Queue;
+	TheCone::RecvQueue Queue;
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
 	bool running;
 };

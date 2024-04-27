@@ -4,8 +4,6 @@
 #include "Interfaces/IPv4/IPv4Endpoint.h"
 #include "BristleconeCommonTypes.h"
 
-static constexpr uint8 CLONE_SIZE = 3;
-static constexpr uint8 MAX_MIXED_CONSECUTIVE_PACKETS_ALLOWED = 100;
 
 class FBristleconeSender : public FRunnable {
 public:
