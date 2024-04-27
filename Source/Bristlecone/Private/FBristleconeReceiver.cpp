@@ -47,7 +47,7 @@ uint32 FBristleconeReceiver::Run() {
 			//this & logging are VERY slow, like potentially reordering our perceived timings slow. We need to be careful as hell interacting
 			//with time and logging, since we're now operating in the lock-sensitive time regime. we'll need a solution.
 			uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
-			UE_LOG(LogTemp, Warning, TEXT("Bristlecone: Without UE Frame Latency, %ld"), receiving_state.GetPacket()->GetTransferTime() - lsbTime);
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone, %ld"), lsbTime - receiving_state.GetPacket()->GetTransferTime());
 
 		}
 
