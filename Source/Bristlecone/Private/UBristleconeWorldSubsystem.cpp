@@ -110,7 +110,7 @@ void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 		{
 			const TheCone::Packet_tpl* current = SelfBind->Peek();
 			uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
-			UE_LOG(LogTemp, Warning, TEXT("Bristlecone SelfBind: Time from send to use, %lld"), current->GetTransferTime() - lsbTime);
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone: With UE Frame Latency, %ld"), current->GetTransferTime() - lsbTime);
 			SelfBind->Dequeue();
 		}
 	}

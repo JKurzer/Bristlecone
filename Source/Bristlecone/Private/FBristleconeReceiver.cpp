@@ -46,7 +46,9 @@ uint32 FBristleconeReceiver::Run() {
 			memcpy(receiving_state.GetPacket(), received_data.GetData(), bytes_read);
 			//this & logging are VERY slow, like potentially reordering our perceived timings slow. We need to be careful as hell interacting
 			//with time and logging, since we're now operating in the lock-sensitive time regime. we'll need a solution.
-			UE_LOG(LogTemp, Warning, TEXT("@, Received Stamp, %lld"), receiving_state.GetSendTimeStamp());
+			uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone: Without UE Frame Latency, %ld"), receiving_state.GetPacket()->GetTransferTime() - lsbTime);
+
 		}
 
 		receiver_socket.IsValid() ? receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f) : 0;
