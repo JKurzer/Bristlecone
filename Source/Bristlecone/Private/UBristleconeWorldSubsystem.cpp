@@ -45,7 +45,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		//Get config and start sender thread
 		ConfigVals = NewObject<UBristleconeConstants>();
 		//TODO: refactor this to allow proper data driven construction.
-		FString address = ConfigVals->default_address.IsEmpty() ? "18.206.208.222" : ConfigVals->default_address;
+		FString address = ConfigVals->default_address.IsEmpty() ? "52.87.255.239" : ConfigVals->default_address;
 		sender_runner.AddTargetAddress(address);
 		sender_runner.BindSource(QueueToSend);
 		sender_runner.SetLocalSockets(socketHigh, socketLow, socketBackground);
@@ -110,7 +110,7 @@ void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 		{
 			const TheCone::Packet_tpl* current = SelfBind->Peek();
 			uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
-			UE_LOG(LogTemp, Warning, TEXT("Bristlecone: With UE Frame Latency, %ld"), current->GetTransferTime() - lsbTime);
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone: With UE Frame Latency, %ld, %ld"),  lsbTime - current->GetTransferTime(), current->GetCycleMeta());
 			SelfBind->Dequeue();
 		}
 	}

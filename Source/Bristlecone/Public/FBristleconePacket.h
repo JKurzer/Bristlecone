@@ -72,6 +72,14 @@ public:
 		transfer_time = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
 	}
 
+	long GetCycleMeta() const {
+		return cycle_metadata;
+	}
+
+	void UpdateCycleOrMeta(long update) {
+		cycle_metadata = update;
+	}
+
 	void UpdateTransferTime(long forceTimeStamp) {
 		transfer_time = forceTimeStamp;
 	}
@@ -93,7 +101,15 @@ public:
 
 private:
 	// Packet headers
+	//thanks to packing, there's not a ton of advantage to using a single long here
+	//we could set the pack pragma and buy back the space, but ops on pack 1 objects
+	//are often slower than they're worth. we're still under the 64 byte threshold
+	//at 8*4 (32) + UDP\IP headers (28) with the 8 byte clone types.
+	//When we have a 16 byte use case, I'll come back and tidy this up
+	//by making those headers an optional type component
+	//but for now, the extra debug info is really really useful.
 	long transfer_time;
+	long cycle_metadata;
 	// Data clone
 	CLONE_TYPE clone_array[CLONE_SIZE];
 };

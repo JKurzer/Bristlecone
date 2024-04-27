@@ -133,13 +133,13 @@ uint32 FBristleconeSender::Run() {
 	
 	while(sender_socket_high) {
 		// Update ring array
-		counter++;
 		//BRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
 		while(!Queue.Get()->IsEmpty())
 		{
+			++counter;
 			sending_state.controller_arr = *Queue->Peek(); //assign by value or you'll have a bad time.
 			packet_container.InsertNewDatagram(&sending_state);
-
+			packet_container.GetPacket()->UpdateCycleOrMeta(counter);
 			for (auto& endpoint : target_endpoints) {
 				int32 bytes_sent;
 				//we may want a mode to timestamp each individual packet during testing so we can get a unique rtt
