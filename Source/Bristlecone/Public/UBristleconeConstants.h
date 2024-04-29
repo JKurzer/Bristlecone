@@ -12,7 +12,7 @@ class UBristleconeConstants : public UDeveloperSettings
 	GENERATED_BODY()
 public:
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", meta= (DisplayName = "Reflector IP"))
 	FString default_address_c;
 
 };
