@@ -26,11 +26,21 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 			QueueToSend = MakeShareable(new TheCone::IncQ(256));
 			DebugSend = QueueToSend;
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Good bind for send queue."));
+		}
+
+
 		if (!QueueOfReceived.IsValid())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: No bind for received queue. Self-binding for debug."));
 			QueueOfReceived = MakeShareable(new TheCone::PacketQ(256));
 			SelfBind = QueueOfReceived;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Good bind for received queue."));
 		}
 
 		local_endpoint = FIPv4Endpoint(FIPv4Address::Any, DEFAULT_PORT);

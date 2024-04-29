@@ -5,8 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "UBristleconeConstants.generated.h"
-
-UCLASS(Config = Game, defaultconfig, meta = (DisplayName = "Save Game Settings"))
+//https://www.tomlooman.com/unreal-engine-developer-settings/ Welp, I've done SOMETHING wrong.
+UCLASS(Config = Game, defaultconfig, meta = (DisplayName = "Bristlecone Settings"))
 class UBristleconeConstants : public UDeveloperSettings
 {
 	GENERATED_BODY()
