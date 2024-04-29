@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "UBristleconeConstants.generated.h"
 
-UCLASS(Config = Game)
+UCLASS(config=Game)
 class UBristleconeConstants : public UObject
 {
 	GENERATED_BODY()
