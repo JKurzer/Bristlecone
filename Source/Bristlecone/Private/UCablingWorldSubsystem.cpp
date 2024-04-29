@@ -48,6 +48,14 @@ void UCablingWorldSubsystem::PostInitialize()
 {
 	UBristleconeWorldSubsystem* MySquire = GetTickableGameObjectWorld()->GetSubsystem< UBristleconeWorldSubsystem>();
 	MySquire->QueueToSend = CabledThreadControlQueue;
+	if (MySquire->WakeSender != nullptr)
+	{
+		controller_runner.WakeTransmitThread = MySquire->WakeSender;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UCablingWorldSubsystem: Sender wake event is null!!!"));
+	}
 }
 
 void UCablingWorldSubsystem::Tick(float DeltaTime) {

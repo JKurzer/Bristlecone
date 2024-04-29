@@ -27,6 +27,7 @@ public:
 	bool running;//cabling will let anyone unplug it. cabling is inanimate. cabling has no opinions on this.
 	TSharedPtr<TCircularQueue<uint64_t>> GameThreadControlQueue;
 	TSharedPtr<TCircularQueue<uint64_t>> CabledThreadControlQueue;
+	FEvent* WakeTransmitThread;
 private:
 	void Cleanup();
 

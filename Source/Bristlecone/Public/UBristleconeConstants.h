@@ -6,15 +6,14 @@
 #include "CoreMinimal.h"
 #include "UBristleconeConstants.generated.h"
 
-UCLASS(config=Game)
-class UBristleconeConstants : public UObject
+UCLASS(Config = Game, defaultconfig, meta = (DisplayName = "Save Game Settings"))
+class UBristleconeConstants : public UDeveloperSettings
 {
 	GENERATED_BODY()
 public:
-	//TODO: rework this to be a bit less janky? Maybe pick a good config and hierarchy?
-	UPROPERTY(Config)
-	FString default_address;
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
+	FString default_address_c;
 
 };
 

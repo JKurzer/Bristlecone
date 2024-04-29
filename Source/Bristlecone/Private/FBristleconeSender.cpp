@@ -132,6 +132,7 @@ uint32 FBristleconeSender::Run() {
 	FControllerState sending_state;
 	
 	while(sender_socket_high) {
+		WakeSender->Reset();
 		// Update ring array
 		//BRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
 		while(!Queue.Get()->IsEmpty())
@@ -162,7 +163,7 @@ uint32 FBristleconeSender::Run() {
 			}
 			Queue->Dequeue();
 		}
-		FPlatformProcess::Sleep(SLEEP_TIME_BETWEEN_THREAD_TICKS);
+		WakeSender->Wait(8);
 	}
 	
 	return 0;

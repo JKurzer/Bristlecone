@@ -41,7 +41,9 @@ public:
 	//It is consumed by the sender thread. Input is expected to be 8 byte packets at 120hz. 
 	//An event is provided, as well, to wake the sender.
 	//Adding more producers WILL cause concurrency bugs immediately.
-	TSharedPtr<TCircularQueue<uint64_t>> QueueToSend;
+	FEvent* WakeSender;
+	TheCone::SendQueue QueueToSend;
+	TheCone::SendQueue DebugSend;
 	//This is the outbound queue, used by the receiver thread. technically, bristlecone doesn't guarantee
 	//that you will have both a sender and a receiver for each datagram, but in practice, it happens enough
 	//that I've paired them in this subsystem explicitly. The sender thread produces, this subsystem consumes for now.
@@ -49,9 +51,10 @@ public:
 
 	TheCone::RecvQueue QueueOfReceived;
 	TheCone::RecvQueue SelfBind;
+
   private:
 	FIPv4Endpoint local_endpoint;
-	UBristleconeConstants* ConfigVals;
+	const UBristleconeConstants* ConfigVals;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketHigh;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketLow;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketBackground;

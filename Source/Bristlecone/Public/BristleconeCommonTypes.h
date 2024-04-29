@@ -14,6 +14,7 @@
 namespace TheCone {
 	typedef FBristleconePacket<uint64_t, 3> Packet_tpl;
 	typedef TCircularQueue<Packet_tpl> PacketQ;
+	typedef TCircularQueue<uint64_t> IncQ;
 	typedef TSharedPtr<PacketQ> RecvQueue;
 	typedef TSharedPtr<TCircularQueue<uint64_t>> SendQueue;
 	typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;

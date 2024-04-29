@@ -90,6 +90,7 @@ uint32 FCabling::Run() {
 					//push to both queues.
 					this->CabledThreadControlQueue.Get()->Enqueue(currentRead);
 					this->GameThreadControlQueue.Get()->Enqueue(currentRead);
+					WakeTransmitThread->Trigger();
 					sent = true;
 					//wake bristlecone
 				}

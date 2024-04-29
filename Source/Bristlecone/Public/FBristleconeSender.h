@@ -19,6 +19,7 @@ public:
 	);
 
 	void ActivateDSCP();
+	FEvent* WakeSender;
 	
 	virtual bool Init() override;
 	virtual uint32 Run() override;
@@ -38,6 +39,5 @@ private:
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
 	TSharedPtr<TCircularQueue<uint64_t>> Queue;
 	uint8 consecutive_zero_bytes_sent;
-
 	bool running;
 };

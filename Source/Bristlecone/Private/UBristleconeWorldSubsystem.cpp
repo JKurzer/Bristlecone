@@ -11,6 +11,8 @@ void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	QueueOfReceived = nullptr;
 	QueueToSend = nullptr;
 	SelfBind = nullptr;
+	DebugSend = nullptr;
+	WakeSender = FPlatformProcess::GetSynchEventFromPool(true);
 	UE_LOG(LogTemp, Warning, TEXT("BCN will not start unless another subsystem creates and binds queues during PostInitialize."));
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world initialized"));
 }
@@ -20,8 +22,9 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: World beginning play"));
 		if (!QueueToSend.IsValid())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Inbound queue not allocated. Threads will not start."));
-			return;
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Inbound queue not allocated. Debug mode only. Connect a controller next time?"));
+			QueueToSend = MakeShareable(new TheCone::IncQ(256));
+			DebugSend = QueueToSend;
 		}
 		if (!QueueOfReceived.IsValid())
 		{
@@ -41,11 +44,11 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		socketLow = MakeShareable(socket_factory.Build());
 		socketBackground = MakeShareable(socket_factory.Build());
 
-
+		sender_runner.WakeSender = WakeSender;
 		//Get config and start sender thread
-		ConfigVals = NewObject<UBristleconeConstants>();
+		ConfigVals = GetDefault<UBristleconeConstants>();
 		//TODO: refactor this to allow proper data driven construction.
-		FString address = ConfigVals->default_address.IsEmpty() ? "52.87.255.239" : ConfigVals->default_address;
+		FString address = ConfigVals->default_address_c.IsEmpty() ? "52.87.255.239" : ConfigVals->default_address_c;
 		sender_runner.AddTargetAddress(address);
 		sender_runner.BindSource(QueueToSend);
 		sender_runner.SetLocalSockets(socketHigh, socketLow, socketBackground);
@@ -97,13 +100,21 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 	}
 
 	ConfigVals = nullptr;
-	
+	FPlatformProcess::ReturnSynchEventToPool(WakeSender);
 	Super::Deinitialize();
 }
 
 void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
+	if (DebugSend.IsValid())
+	{
+		for (int i = 0; i < 50; ++i)
+		{
+			DebugSend.Get()->Enqueue(0xDB000000DEADBEEF);
+			WakeSender->Trigger();
+		}
+	}
 	if (SelfBind.IsValid())
 	{
 		while (!SelfBind->IsEmpty())
