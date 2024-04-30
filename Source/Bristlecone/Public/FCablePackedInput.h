@@ -51,7 +51,8 @@ public:
 	std::bitset<14> buttons;
 	std::bitset<6> events;
 	static const int64 bias = 1024;
-	static const uint64 contraction = 192;
+	static const uint64 contraction = 128;
+	static const uint64 zero_encoding = 1000;
 	//sums to 64! I counted. Like 30 times.
 	
 	uint64_t PackImpl() override
@@ -95,13 +96,19 @@ public:
 	if ((axis <= 0.1875f && axis >= -0.1875f) || (axis > 1.0f || axis < -1.0f))
 	{
 			
-			return bias + contraction; // get deadzoned, lmao.
+			return zero_encoding;
+			// 1000 is an unused encoding due to contraction, since we contract THEN bias
+			// 896 is the highest positive value we will see AFTER debiasing thanks to removing
+			// this part of the range.
+			// this can be fixed but I needed to hurry and stop screwing with the math to make this pretty.
+			// we can eat a spare branch.
 	}
 
 	uint32_t patientNonZero = 0;
 	double contaminatedAdjustment = axis * 1024.0f; // this contaminates QUITE A FEW bits. fortunately...
 	int trunc = contaminatedAdjustment; //We range from 1024 to -1024, and actually need 11 bits a stick.
-	trunc = trunc <= 0 ? trunc + contraction : trunc - contraction; // contract by 18%, roughly.
+	
+	trunc = trunc > 0 ? trunc - contraction : trunc + contraction; // contract by 18%, roughly.
 	uint32_t abs_trunc = trunc + bias; //normally, you'd need to worry about reserving the 0 position
 									//it's why you see ranges of 1024 to -1023
 									//but our deadzoning actually happens to buy us space in our range
@@ -112,11 +119,19 @@ public:
 	}
 	static int32 DebiasStick(int32 axis)
 	{
+		if (axis != 1000)
+		{
 		int32 trunc = axis - bias;
 		//this line was surprisingly inobvious to me. we have to check that's it above the deadzone to
 		//remove the deadzoned case transparently.
-		trunc = trunc > contraction ? trunc + contraction : trunc - contraction;
-		return trunc;
+			trunc = trunc > 0 ? trunc + contraction : trunc - contraction;
+			return trunc;
+		}
+		else
+		{
+			return 0;
+		}
+
 	}
 
 	static float FastLookup(uint32 axis)
