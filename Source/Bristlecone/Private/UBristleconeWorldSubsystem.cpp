@@ -12,6 +12,8 @@ void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	QueueToSend = nullptr;
 	SelfBind = nullptr;
 	DebugSend = nullptr;
+	ConfigVals = GetDefault<UBristleconeConstants>();
+	LogOnReceive = ConfigVals->log_receive_c;
 	WakeSender = FPlatformProcess::GetSynchEventFromPool(true);
 	UE_LOG(LogTemp, Warning, TEXT("BCN will not start unless another subsystem creates and binds queues during PostInitialize."));
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world initialized"));
@@ -56,7 +58,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 
 		sender_runner.WakeSender = WakeSender;
 		//Get config and start sender thread
-		ConfigVals = GetDefault<UBristleconeConstants>();
+		
 		//TODO: refactor this to allow proper data driven construction.
 		FString address = ConfigVals->default_address_c.IsEmpty() ? "52.87.255.239" : ConfigVals->default_address_c;
 		sender_runner.AddTargetAddress(address);
@@ -66,6 +68,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
 		// Start receiver thread
+		receiver_runner.LogOnReceive = LogOnReceive;
 		receiver_runner.SetLocalSocket(socketHigh);
 		receiver_runner.BindSink(QueueOfReceived);
 		receiver_thread.Reset(FRunnableThread::Create(&receiver_runner, TEXT("Bristlecone.Receiver")));
@@ -130,8 +133,11 @@ void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 		while (!SelfBind->IsEmpty())
 		{
 			const TheCone::Packet_tpl* current = SelfBind->Peek();
-			uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
-			UE_LOG(LogTemp, Warning, TEXT("Bristlecone: With UE Frame Latency, %ld, %ld"),  lsbTime - current->GetTransferTime(), current->GetCycleMeta());
+			if (LogOnReceive)
+			{
+				uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
+				UE_LOG(LogTemp, Warning, TEXT("Bristlecone: With UE Frame Latency, %ld, %ld"), lsbTime - current->GetTransferTime(), current->GetCycleMeta());
+			}
 			SelfBind->Dequeue();
 		}
 	}

@@ -76,7 +76,7 @@ uint32 FCabling::Run() {
 				boxing.buttons = (uint32_t)state.buttons; //strikingly, there's no paddle field.
 				boxing.buttons.set(12, (state.leftTrigger > 0.55)); //check the bitfield.
 				boxing.buttons.set(13, (state.rightTrigger > 0.55));
-				boxing.events = boxing.events.none();
+				boxing.events = 0;
 				currentRead = boxing.PackImpl();
 
 				//because we deadzone and integerize, we actually have a pretty good idea
