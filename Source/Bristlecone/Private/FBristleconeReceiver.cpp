@@ -52,10 +52,10 @@ uint32 FBristleconeReceiver::Run() {
 				uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
 				UE_LOG(LogTemp, Warning, TEXT("Bristlecone, %ld, %ld"), lsbTime - receiving_state.GetTransferTime(), receiving_state.GetCycleMeta());
 			}
-			const uint64_t cycle = receiving_state.GetCycleMeta();
+			const int64_t cycle = receiving_state.GetCycleMeta();
 			//we keep a mask of the 64 cycles before the highest seen to make sure we don't emit more than once.
 			//if it's higher, we slide forwards and don't need to check the mask
-			if ((cycle < HighestSeen))
+			if ((cycle > HighestSeen))
 			{
 				//this isn't strictly needed but you shouldn't shift more than the width.
 				cycle - HighestSeen > 64 ? SeenCycles = 0 : SeenCycles >>= (cycle - HighestSeen);

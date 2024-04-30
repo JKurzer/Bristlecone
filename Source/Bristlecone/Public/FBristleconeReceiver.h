@@ -26,8 +26,8 @@ public:
 
 private:
 	void Cleanup();
-	uint64 SeenCycles;
-	uint64 HighestSeen;
+	int64 SeenCycles;
+	int64 HighestSeen;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> receiver_socket;
 	TArray<uint8> received_data;
 	TheCone::RecvQueue Queue;
