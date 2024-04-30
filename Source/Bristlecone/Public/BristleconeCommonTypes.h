@@ -12,11 +12,12 @@
 //centralizing the typedefs to avoid circularized header includes
 //and further ease swapping over between 8 and 16 byte modes. IWYU!
 namespace TheCone {
-	typedef FBristleconePacket<uint64_t, 3> Packet_tpl;
+	typedef uint64_t PacketElement;
+	typedef FBristleconePacket<PacketElement, 3> Packet_tpl;
 	typedef TCircularQueue<Packet_tpl> PacketQ;
-	typedef TCircularQueue<uint64_t> IncQ;
+	typedef TCircularQueue<PacketElement> IncQ;
 	typedef TSharedPtr<PacketQ> RecvQueue;
-	typedef TSharedPtr<TCircularQueue<uint64_t>> SendQueue;
+	typedef TSharedPtr<TCircularQueue<PacketElement>> SendQueue;
 	typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
 
 	static constexpr int CONTROLLER_STATE_PACKET_SIZE = sizeof(FControllerStatePacket);

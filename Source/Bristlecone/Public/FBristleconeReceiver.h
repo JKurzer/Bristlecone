@@ -20,9 +20,14 @@ public:
 	virtual void Exit() override;
 	virtual void Stop() override;
 
+	//public so it can be changed more easily in the future during runtime
+	//FObjects don't really have props, so not dealing with this atm.
+	bool LogOnReceive;
+
 private:
 	void Cleanup();
-
+	uint64 SeenCycles;
+	uint64 HighestSeen;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> receiver_socket;
 	TArray<uint8> received_data;
 	TheCone::RecvQueue Queue;

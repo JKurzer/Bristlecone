@@ -20,7 +20,7 @@ using namespace TheCone;
 
 
 UCLASS()
-class  UBristleconeWorldSubsystem : public UTickableWorldSubsystem
+class BRISTLECONE_API UBristleconeWorldSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -51,6 +51,7 @@ public:
 
 	TheCone::RecvQueue QueueOfReceived;
 	TheCone::RecvQueue SelfBind;
+	bool LogOnReceive;
 
   private:
 	FIPv4Endpoint local_endpoint;

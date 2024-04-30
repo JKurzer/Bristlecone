@@ -62,9 +62,12 @@ public class Bristlecone : ModuleRules
             "Core",
             "CoreUObject",
             "Engine",
+            "Slate",
+            "ApplicationCore",
             "InputCore",
             "Networking",
             "Sockets",
+            "Settings",
             "DeveloperSettings"
         });
 
@@ -73,6 +76,7 @@ public class Bristlecone : ModuleRules
             {
                 "Core",
                 "CoreUObject",
+                "ApplicationCore",
                 "Engine",
                 "Slate",
                 "SlateCore",
@@ -80,7 +84,8 @@ public class Bristlecone : ModuleRules
                 "InputCore",
                 "Networking",
                 "Sockets",
-                "Sockets",
+                "Settings",
+                "DeveloperSettings",
                 "NetCommon"
             });
 
