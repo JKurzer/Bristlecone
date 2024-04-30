@@ -5,6 +5,7 @@ THIRD_PARTY_INCLUDES_START
 #include "Microsoft/HideMicrosoftPlatformTypes.h"
 THIRD_PARTY_INCLUDES_END
 #include <bitset>
+#include <thread>
 using std::bitset;
 
 FCabling::FCabling()
@@ -36,12 +37,20 @@ uint32 FCabling::Run() {
 	int seqNumber = 0;
 	uint64_t priorReading = 0;
 	uint64_t currentRead = 0;
+	uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
+	uint32_t lastPoll = 0;
+	uint32_t periodInNano = 2 * 1000000;
+
+	
+
 	//We're using the GameInput lib.
 	//https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/input/overviews/input-overview
 	while (running)
 	{
-		if (SUCCEEDED(g_gameInput->GetCurrentReading(GameInputKindGamepad, g_gamepad, &reading)))
+
+		if ((lastPoll + periodInNano) <= lsbTime && SUCCEEDED(g_gameInput->GetCurrentReading(GameInputKindGamepad, g_gamepad, &reading)))
 		{
+			lastPoll = lsbTime;
 			// If no device has been assigned to g_gamepad yet, set it
 			// to the first device we receive input from. (This must be
 			// the one the player is using because it's generating input.)
@@ -104,16 +113,18 @@ uint32 FCabling::Run() {
 				sent = false;
 			}
 			++seqNumber;
-			FPlatformProcess::Sleep(1.0f / 512);
 		}
 		else if (g_gamepad)
 		{
 			g_gamepad->Release();
 			g_gamepad = nullptr;
-			FPlatformProcess::Sleep(1.0f / 512);
+			
 			continue;
 		}
-
+		// this is technically a kind of spin lock,
+		// checking the steady clock is actually quite a long operation
+		std::this_thread::yield(); // but this gets... weird.
+		lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count(); 
 	}
 	if (g_gamepad) g_gamepad->Release();
 	if (g_gameInput) g_gameInput->Release();

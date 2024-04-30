@@ -112,7 +112,7 @@ void FBristleconeSender::ActivateDSCP()
 	QOSAddSocketToFlow(QoSHandle, underlyingHigh, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeAudioVideo, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
 	//Excellent effort is an odd one. It should code for what is basically a legacy value, but it appears to still be reflected.
-	QOSAddSocketToFlow(QoSHandle, underlyingLow, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeExcellentEffort, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
+	QOSAddSocketToFlow(QoSHandle, underlyingLow, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeBackground, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
 	QoSFlowId = 0;
 	//Control doesn't seem to actually set a respected value. Unfortunately, I can't find a way to set an arbitrary DSCP without admin on windows.
 	QOSAddSocketToFlow(QoSHandle, underlyingSPICY, (SOCKADDR*)&destination, QOS_TRAFFIC_TYPE::QOSTrafficTypeVoice, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId);
