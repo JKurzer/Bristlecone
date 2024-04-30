@@ -37,17 +37,18 @@ uint32 FCabling::Run() {
 	int seqNumber = 0;
 	uint64_t priorReading = 0;
 	uint64_t currentRead = 0;
-	uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
+	//Hi! Jake here! Reminding you that this will CYCLE every 2100 milliseconds or so.
+	//That's known. Isn't that fun? :) 
+	uint32_t lsbTime = 0x00000000FFFFFFFF & (std::chrono::steady_clock::now().time_since_epoch().count());
 	uint32_t lastPoll = 0;
-	uint32_t periodInNano = 2 * 1000000;
-
+	uint32_t periodInNano = 1900000;
+	uint32_t hertz = 512;
 	
 
 	//We're using the GameInput lib.
 	//https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/input/overviews/input-overview
 	while (running)
 	{
-
 		if ((lastPoll + periodInNano) <= lsbTime && SUCCEEDED(g_gameInput->GetCurrentReading(GameInputKindGamepad, g_gamepad, &reading)))
 		{
 			lastPoll = lsbTime;
@@ -106,20 +107,25 @@ uint32 FCabling::Run() {
 				priorReading = currentRead;
 			}
 
+			//if this is the case, we've looped round. rather than verifying, we'll just miss one chance to poll.
+			//sequence number is still the actual arbiter, so we'll only send every 4 periods, even if we poll
+			//one less or one more time.
+			if (lsbTime < lastPoll)
+			{
+				lastPoll = 0;
+			}
 
+			if ((seqNumber % hertz) == 0)
+			{
+				long long now = std::chrono::steady_clock::now().time_since_epoch().count();
+				UE_LOG(LogTemp, Display, TEXT("Cabling seq int 128, %lld"), (now/1000000000));
+			}
 
 			if ((seqNumber % 4) == 0)
 			{
 				sent = false;
 			}
 			++seqNumber;
-		}
-		else if (g_gamepad)
-		{
-			g_gamepad->Release();
-			g_gamepad = nullptr;
-			
-			continue;
 		}
 		// this is technically a kind of spin lock,
 		// checking the steady clock is actually quite a long operation
