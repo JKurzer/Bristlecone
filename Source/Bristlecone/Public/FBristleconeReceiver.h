@@ -31,6 +31,7 @@ private:
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> receiver_socket;
 	TArray<uint8> received_data;
 	TheCone::RecvQueue Queue;
+	TheCone::CycleTracking MySeen;
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
 	bool running;
 };
