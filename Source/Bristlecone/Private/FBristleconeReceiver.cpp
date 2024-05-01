@@ -33,8 +33,17 @@ bool FBristleconeReceiver::Init() {
 uint32 FBristleconeReceiver::Run() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Receiver: Running receiver thread"));
 	const TSharedRef<FInternetAddr> targetAddr = socket_subsystem->CreateInternetAddr();
-	//hello there!
-	MySeen = TheCone::CycleTracking(0b1 + 'k' + 'n' + 0b1);
+	FString localNID = FGenericPlatformMisc::GetLoginId();
+
+	//if you use a system like this, the reflector will need the unhashed ids AND the session id.
+	//dummy getsession crashes in shipping builds on purpose. it's a mock. this will ultimately be reworked to replace
+	//timestamp or cycle, depending on what we find more reliable, since the TCP backhaul maps timestamp onto cycle.
+	//it's not actually needed, interestingly, but it does make life a ton more convenient and we want to stay word aligned.
+	//likely timestamp as (nanos >> K) & 0xFFFFFFFF or the lower 32 bits of the nanosecond timestamp, discarding the 
+	//first K binary digits to help remove jitter's effect.
+	uint32_t ThinHash = FTextLocalizationResource::HashString(localNID, TheCone::DummyGetBristleconeSessionID());
+	MySeen = TheCone::CycleTracking(ThinHash);
+	
 	while (running && receiver_socket) {
 		TheCone::Packet_tpl receiving_state;
 	
