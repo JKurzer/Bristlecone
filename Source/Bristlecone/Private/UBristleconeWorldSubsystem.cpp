@@ -5,6 +5,15 @@
 
 #include "Common/UdpSocketBuilder.h"
 
+
+uint64_t UBristleconeWorldSubsystem::getSessionID()
+{
+#if UE_BUILD_SHIPPING
+	throw();// IF YOU SEE THIS, YOU SHIPPED WITHOUT ADDING SESSION MANAGEMENT. THAT IS NOT GOOD.
+#endif
+	return 0xDEADBEEF;
+} 
+
 void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Inbound and Outbound Queues set to null."));

@@ -21,6 +21,18 @@ namespace TheCone {
 	typedef TSharedPtr<TCircularQueue<PacketElement>> SendQueue;
 	typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
 
+	//this crashes in prod. it is intended ONLY for use during mock out of your session system.
+	//I do not know how yours will work, but I needed this during the build out of mine.
+	static uint64_t DummyGetBristleconeSessionID()
+	{
+		#if UE_BUILD_SHIPPING
+		UE_LOG(LogTemp, Error, TEXT("DummyGetBristleconeSessionID made into a shipped build."));
+		throw();// IF YOU SEE THIS, YOU SHIPPED WITHOUT ADDING SESSION MANAGEMENT.
+		#endif
+		return 0xDEADBEEF;
+	}
+
+
 	//trackers from this bristlecone use this value.
 	//as the codebase grows and coheres into something truly compositionable for support of 
 	//K streams, particularly K received, this will likely end up a template value and this
