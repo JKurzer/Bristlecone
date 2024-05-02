@@ -37,11 +37,11 @@ uint32 FCabling::Run() {
 	int seqNumber = 0;
 	uint64_t priorReading = 0;
 	uint64_t currentRead = 0;
-	//Hi! Jake here! Reminding you that this will CYCLE every 2100 milliseconds or so.
+	//Hi! Jake here! Reminding you that this will CYCLE every some milliseconds.
 	//That's known. Isn't that fun? :) 
 	uint32_t lsbTime = 0x00000000FFFFFFFF & (std::chrono::steady_clock::now().time_since_epoch().count());
 	uint32_t lastPoll = 0;
-	uint32_t periodInNano = 1900000;
+	uint32_t periodInNano = 1870000;
 	uint32_t hertz = 512;
 
 
@@ -127,7 +127,7 @@ uint32 FCabling::Run() {
 			if ((seqNumber % hertz) == 0)
 			{
 				long long now = std::chrono::steady_clock::now().time_since_epoch().count();
-				UE_LOG(LogTemp, Display, TEXT("Cabling seq int 128, %lld"), (now / 1000000000));
+				UE_LOG(LogTemp, Display, TEXT("Cabling hertz cycled: %lld"), (now / 1000000000));
 			}
 
 			if ((seqNumber % 4) == 0)
