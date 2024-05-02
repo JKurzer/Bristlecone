@@ -52,8 +52,8 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 						.AsNonBlocking()
 						.AsReusable()
 						.BoundToEndpoint(local_endpoint)
-						.WithReceiveBufferSize(CONTROLLER_STATE_PACKET_SIZE * 10)
-						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 10);
+						.WithReceiveBufferSize(CONTROLLER_STATE_PACKET_SIZE * 25)
+						.WithSendBufferSize(CONTROLLER_STATE_PACKET_SIZE * 25);
 		socketHigh = MakeShareable(socket_factory.Build());
 		socketLow = MakeShareable(socket_factory.Build());
 		socketBackground = MakeShareable(socket_factory.Build());
