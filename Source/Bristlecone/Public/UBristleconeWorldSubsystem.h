@@ -44,11 +44,11 @@ public:
 	FEvent* WakeSender;
 	TheCone::SendQueue QueueToSend;
 	TheCone::SendQueue DebugSend;
-	//This is the outbound queue, used by the receiver thread. technically, bristlecone doesn't guarantee
-	//that you will have both a sender and a receiver for each datagram, but in practice, it happens enough
-	//that I've paired them in this subsystem explicitly. The sender thread produces, this subsystem consumes for now.
-	//Again, only 1p1c patterns are supported by this lockless design. The receiver waits on its socket, not this queue.
 
+	//This is the outbound queue of received packets, produced by the receiver thread. technically, bristlecone doesn't guarantee
+	//that you will have both a sender and a receiver for each datagram, but in practice, it happens enough
+	//that I've paired them in this subsystem explicitly.
+	//Again, only 1p1c patterns are supported by this lockless design. The receiver waits on its socket, not this queue.
 	TheCone::RecvQueue QueueOfReceived;
 	TheCone::RecvQueue SelfBind;
 	bool LogOnReceive;

@@ -17,8 +17,8 @@ namespace TheCone {
 	typedef FBristleconePacket<PacketElement, 3> Packet_tpl;
 	typedef TCircularQueue<Packet_tpl> PacketQ;
 	typedef TCircularQueue<PacketElement> IncQ;
-	typedef TSharedPtr<PacketQ> RecvQueue;
-	typedef TSharedPtr<TCircularQueue<PacketElement>> SendQueue;
+	typedef TSharedPtr<PacketQ, ESPMode::ThreadSafe> RecvQueue; // it is the default, but let's be explicit.
+	typedef TSharedPtr<TCircularQueue<PacketElement>, ESPMode::ThreadSafe> SendQueue; // note that the queues only support 1p1c mode.
 	typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
 
 	//this crashes in prod. it is intended ONLY for use during mock out of your session system.

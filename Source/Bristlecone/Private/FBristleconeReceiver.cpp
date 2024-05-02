@@ -62,7 +62,7 @@ uint32 FBristleconeReceiver::Run() {
 			//if it's higher, we slide forwards and don't need to check the mask. That's handled in the BitTracker
 			if (!MySeen.Update(cycle))
 			{
-				return;
+				continue;
 			}
 			if (LogOnReceive)
 			{
