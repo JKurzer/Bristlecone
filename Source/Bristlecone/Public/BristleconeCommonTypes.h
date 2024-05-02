@@ -87,7 +87,7 @@ namespace TheCone {
 			
 		};
 		//note, because we may do bitmath on highest seen, we need to keep it as an unsigned
-		//but because we use it in subtraction operations, you will see it cast to long long
+		// this means a few of our comparisons are odd to avoid needing signed numbers.
 		uint64_t HighestSeen;
 		uint64_t SeenCycles;
 		uint64_t FFBTID;
@@ -154,17 +154,20 @@ namespace TheCone {
 		};
 
 		//Mutate, returns true if updated, false if bit is set OR unsettable
-		bool Update(int cycle)
+		bool Update(uint64_t cycle)
 		{
-			if ((cycle > HighestSeen))
+			//explaining why this works to detect wrap arounds is quite painful
+			//but basically, cycle starts as a 32 bit number, Highest always comes from cycle
+			if ((cycle > HighestSeen) || (HighestSeen - cycle) > 0xFFFF)
 			{
 				//this isn't strictly needed but you shouldn't shift more than the width.
-				cycle - (long long)HighestSeen > 64 ? SeenCycles = 0 : SeenCycles >>= (cycle - HighestSeen);
+				cycle - HighestSeen > 64 ? SeenCycles = 0 : SeenCycles >>= (cycle - HighestSeen);
 				HighestSeen = cycle;
 				return true;
 			}
-			//if it's off the bottom of the mask, we discard it.
-			else if ((cycle - (long long)HighestSeen) < -64)
+			//if it's off the bottom of the mask by a more reasonable amount
+			//we discard it. again, we use positive deltas.
+			else if ((HighestSeen - cycle) > 64)
 			{
 				return false;
 			}
@@ -182,13 +185,13 @@ namespace TheCone {
 		};
 
 		//check if we've seen a value or if it's too far in the past
-		bool CheckSeenOrPast(int cycle)
+		bool CheckSeenOrPast(uint64_t cycle)
 		{
 			if ((cycle > HighestSeen))
 			{
 				return false;
 			} 
-			else if ((cycle - (long long)HighestSeen) < -64)
+			else if ((HighestSeen - cycle) > 64) //lets us stay unsigned.
 			{
 				return true;
 			}

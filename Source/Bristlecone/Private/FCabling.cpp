@@ -108,12 +108,12 @@ uint32 FCabling::Run() {
 					}
 					priorReading = currentRead;
 				}
-				else
-				{
-					g_gamepad->Release();
-					g_gamepad = nullptr;
-					continue;
-				}
+
+			}
+			else
+			{
+				g_gamepad->Release();
+				g_gamepad = nullptr;
 			}
 
 			//if this is the case, we've looped round. rather than verifying, we'll just miss one chance to poll.

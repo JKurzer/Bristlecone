@@ -57,7 +57,7 @@ uint32 FBristleconeReceiver::Run() {
 			memcpy(&receiving_state, received_data.GetData(), bytes_read);
 			//this & logging are VERY slow, like potentially reordering our perceived timings slow. We need to be careful as hell interacting
 			//with time and logging, since we're now operating in the lock-sensitive time regime. we'll need a solution.
-			const int64_t cycle = receiving_state.GetCycleMeta();
+			const uint64_t cycle = receiving_state.GetCycleMeta();
 			//we keep a mask of the 64 cycles before the highest seen to make sure we don't emit more than once.
 			//if it's higher, we slide forwards and don't need to check the mask. That's handled in the BitTracker
 			if (!MySeen.Update(cycle))
