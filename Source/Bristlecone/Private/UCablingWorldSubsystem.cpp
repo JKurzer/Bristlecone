@@ -15,6 +15,7 @@
 void UCablingWorldSubsystem::DestructiveChangeLocalOutboundQueue(SendQueue NewlyAllocatedQueue)
 {
 	GameThreadControlQueue = NewlyAllocatedQueue;
+	controller_runner.GameThreadControlQueue = NewlyAllocatedQueue;
 }
 
 //We're going to wire up the RT system and oversample at 3x expected control input hertz, so 360

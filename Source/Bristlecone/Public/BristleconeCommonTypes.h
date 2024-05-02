@@ -86,10 +86,12 @@ namespace TheCone {
 			DISJOINT = 3,
 			
 		};
-
+		//note, because we may do bitmath on highest seen, we need to keep it as an unsigned
+		//but because we use it in subtraction operations, you will see it cast to long long
 		uint64_t HighestSeen;
 		uint64_t SeenCycles;
 		uint64_t FFBTID;
+
 
 		//must have a unique FFBTID per entity per stream or task.
 		//comparisons between trackers are assumed non-meaningful.
@@ -157,12 +159,12 @@ namespace TheCone {
 			if ((cycle > HighestSeen))
 			{
 				//this isn't strictly needed but you shouldn't shift more than the width.
-				cycle - HighestSeen > 64 ? SeenCycles = 0 : SeenCycles >>= (cycle - HighestSeen);
+				cycle - (long long)HighestSeen > 64 ? SeenCycles = 0 : SeenCycles >>= (cycle - HighestSeen);
 				HighestSeen = cycle;
 				return true;
 			}
 			//if it's off the bottom of the mask, we discard it.
-			else if ((cycle - HighestSeen) < -64)
+			else if ((cycle - (long long)HighestSeen) < -64)
 			{
 				return false;
 			}
@@ -186,7 +188,7 @@ namespace TheCone {
 			{
 				return false;
 			} 
-			else if ((cycle - HighestSeen) < -64)
+			else if ((cycle - (long long)HighestSeen) < -64)
 			{
 				return true;
 			}
@@ -199,6 +201,13 @@ namespace TheCone {
 				return false;
 			}
 		};
+		private:
+			FFastBitTracker()
+			{
+				HighestSeen = 0;
+				SeenCycles = 0;
+				FFBTID = FFTID_BIT_PREFIX;
+			};
 	};
 	//today I learned that seer is just see-er. :|
 	typedef FFastBitTracker CycleTracking;

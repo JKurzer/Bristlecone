@@ -16,7 +16,7 @@
 
 
 UCLASS()
-class  UCablingWorldSubsystem : public UTickableWorldSubsystem
+class  BRISTLECONE_API UCablingWorldSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
 public:
