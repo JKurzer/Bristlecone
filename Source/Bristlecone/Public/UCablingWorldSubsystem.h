@@ -19,6 +19,12 @@ UCLASS()
 class  UCablingWorldSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
+public:
+	//in general, this should be called very seldom, as it is a DESTRUCTIVE
+	//and slightly unsafe operation. calling it outside of postinitialize
+	//or beginplay is not recommended. instead, clients should get a reference
+	//and change what queue they listen on rather than replacing this queue.
+	void DestructiveChangeLocalOutboundQueue(SendQueue NewlyAllocatedQueue); 
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -39,7 +45,7 @@ protected:
 	// Receiver information
 
 	FCabling controller_runner;
-	TSharedPtr<TCircularQueue<uint64_t>> GameThreadControlQueue;
-	TSharedPtr<TCircularQueue<uint64_t>> CabledThreadControlQueue;
+	SendQueue GameThreadControlQueue;
+	SendQueue CabledThreadControlQueue;
 	TUniquePtr<FRunnableThread> controller_thread;
 };

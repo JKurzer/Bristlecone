@@ -133,6 +133,16 @@ public:
 		}
 
 	}
+	static float UnpackStick(uint32 stickBits)
+	{
+		//oh boy. sure do hate this. I didn't use a sign bit, and now I suffer.
+		//all of this needs to be polished down til it shines.
+		int32 intValue = FCableInputPacker::DebiasStick(stickBits);
+		//while the lookup is hot, and thanks to prefetching
+		//it should always be hot, it's about as fast as division and doesn't incur error.
+		float floatValue = FCableInputPacker::FastLookup(abs(intValue));
+		return intValue >= 0 ? floatValue : (-floatValue);
+	}
 
 	static float FastLookup(uint32 axis)
 	{

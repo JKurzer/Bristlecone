@@ -10,7 +10,13 @@
 // the Cabling world subsystem for making accessible to the game thread...
 // AND
 // a threadsafe queue supporting a single consuming thread, then triggers an event.
- 
+
+//Destructive method for switching lifecycle and consumer ownership for the "gamethread" queue.
+void UCablingWorldSubsystem::DestructiveChangeLocalOutboundQueue(SendQueue NewlyAllocatedQueue)
+{
+	GameThreadControlQueue = NewlyAllocatedQueue;
+}
+
 //We're going to wire up the RT system and oversample at 3x expected control input hertz, so 360
 //This is because XB1+ Controllers have a max sample rate of 120.
 //If we don't have a new input after 3 polls, we ship the old one.
