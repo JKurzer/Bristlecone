@@ -41,8 +41,10 @@ uint32 FCabling::Run() {
 	//That's known. Isn't that fun? :) 
 	uint32_t lsbTime = 0x00000000FFFFFFFF & (std::chrono::steady_clock::now().time_since_epoch().count());
 	uint32_t lastPoll = 0;
-	uint32_t periodInNano = 1870000;
-	uint32_t hertz = 512;
+	constexpr uint32_t sampleHertz = 512;
+	constexpr uint32_t sendHertz = 70;
+	constexpr uint32_t sendHertzFactor = sampleHertz/sendHertz;
+	constexpr uint32_t periodInNano = 1000000000 / sampleHertz;
 
 
 	//We're using the GameInput lib.
@@ -97,14 +99,13 @@ uint32 FCabling::Run() {
 					//excising some amount of jitter. Because we always round down, you have to move
 					//fully to a new position and this seems to be a larger delta than the average
 					//heart-rate jitter or control noise.
-					if ((seqNumber % 4) == 0 || (currentRead != priorReading))
+					if ((seqNumber % sendHertzFactor) == 0 || (currentRead != priorReading))
 					{
 						//push to both queues.
 						this->CabledThreadControlQueue.Get()->Enqueue(currentRead);
 						this->GameThreadControlQueue.Get()->Enqueue(currentRead);
 						WakeTransmitThread->Trigger();
 						sent = true;
-						//wake bristlecone
 					}
 					priorReading = currentRead;
 				}
@@ -124,13 +125,13 @@ uint32 FCabling::Run() {
 				lastPoll = 0;
 			}
 
-			if ((seqNumber % hertz) == 0)
+			if ((seqNumber % sampleHertz) == 0)
 			{
 				long long now = std::chrono::steady_clock::now().time_since_epoch().count();
 				UE_LOG(LogTemp, Display, TEXT("Cabling hertz cycled: %lld"), (now / 1000000000));
 			}
 
-			if ((seqNumber % 4) == 0)
+			if ((seqNumber % sendHertzFactor) == 0)
 			{
 				sent = false;
 			}
