@@ -62,7 +62,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		//Get config and start sender thread
 		
 		//TODO: refactor this to allow proper data driven construction.
-		FString address = ConfigVals->default_address_c.IsEmpty() ? "52.87.255.239" : ConfigVals->default_address_c;
+		FString address = ConfigVals->default_address_c.IsEmpty() ? "34.207.0.66" : ConfigVals->default_address_c;
 		sender_runner.AddTargetAddress(address);
 		sender_runner.BindSource(QueueToSend);
 		sender_runner.SetLocalSockets(socketHigh, socketLow, socketBackground);
