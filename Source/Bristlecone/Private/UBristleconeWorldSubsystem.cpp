@@ -16,7 +16,7 @@ void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	DebugSend = nullptr;
 	ConfigVals = GetDefault<UBristleconeConstants>();
 	LogOnReceive = ConfigVals->log_receive_c;
-	WakeSender = FPlatformProcess::GetSynchEventFromPool(true);
+	WakeSender = MakeShareable(FPlatformProcess::GetSynchEventFromPool(true));
 	UE_LOG(LogTemp, Warning, TEXT("BCN will not start unless another subsystem creates and binds queues during PostInitialize."));
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world initialized"));
 }
@@ -58,7 +58,8 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		socketLow = MakeShareable(socket_factory.Build());
 		socketBackground = MakeShareable(socket_factory.Build());
 
-		sender_runner.WakeSender = WakeSender;
+		//sender_runner.WakeSender = WakeSender;
+		sender_runner.SetWakeSender(WakeSender);
 		//Get config and start sender thread
 		
 		//TODO: refactor this to allow proper data driven construction.
@@ -115,7 +116,7 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 	}
 
 	ConfigVals = nullptr;
-	FPlatformProcess::ReturnSynchEventToPool(WakeSender);
+	FPlatformProcess::ReturnSynchEventToPool(WakeSender.Get());
 	Super::Deinitialize();
 }
 

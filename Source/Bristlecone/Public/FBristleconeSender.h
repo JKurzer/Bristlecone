@@ -17,9 +17,9 @@ public:
 		const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket_low,
 		const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket_adaptive
 	);
+	void SetWakeSender(const TSharedPtr<FEvent, ESPMode::ThreadSafe>& NewWakeSender);
 
 	void ActivateDSCP();
-	FEvent* WakeSender;
 	
 	virtual bool Init() override;
 	virtual uint32 Run() override;
@@ -35,6 +35,8 @@ private:
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_low;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> sender_socket_background;
 	TArray<FIPv4Endpoint> target_endpoints;
+
+	TSharedPtr<FEvent, ESPMode::ThreadSafe> WakeSender;
 
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
 	TSharedPtr<TCircularQueue<uint64_t>> Queue;
