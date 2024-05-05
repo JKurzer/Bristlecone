@@ -28,7 +28,6 @@ bool FCabling::Init() {
 
 //this is based directly on the gameinput sample code.
 uint32 FCabling::Run() {
-
 	IGameInput* g_gameInput = nullptr;
 	HRESULT gameInputSpunUp = GameInputCreate(&g_gameInput);
 	IGameInputDevice* g_gamepad = nullptr;
@@ -111,7 +110,7 @@ uint32 FCabling::Run() {
 				}
 
 			}
-			else
+			else if (g_gamepad != nullptr)
 			{
 				g_gamepad->Release();
 				g_gamepad = nullptr;

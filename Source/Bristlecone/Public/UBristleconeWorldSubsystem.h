@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FBristleconePacket.h"
 #include "FBristleconeReceiver.h"
 #include "FBristleconeSender.h"
 #include "Subsystems/WorldSubsystem.h"
@@ -16,8 +15,6 @@
 //of UObjects, but for now, I'm leaving it. My use-cases only require the 8byte.
 #include "UBristleconeWorldSubsystem.generated.h"
 using namespace TheCone;
-
-
 
 UCLASS()
 class BRISTLECONE_API UBristleconeWorldSubsystem : public UTickableWorldSubsystem
@@ -55,13 +52,11 @@ public:
 
   private:
 	FIPv4Endpoint local_endpoint;
-	const UBristleconeConstants* ConfigVals;
+
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketHigh;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketLow;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketBackground;
 	
-
-
 	// Sender information
   	FBristleconeSender sender_runner;
   	TUniquePtr<FRunnableThread> sender_thread;
