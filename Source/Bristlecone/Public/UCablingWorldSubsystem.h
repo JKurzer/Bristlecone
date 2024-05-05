@@ -6,7 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "FCabling.h"
 #include "HAL/Runnable.h"
-#include "Containers/CircularQueue.h"
+#include "BristleconeCommonTypes.h"
 #include "UCablingWorldSubsystem.generated.h"
 
 
@@ -24,7 +24,7 @@ public:
 	//and slightly unsafe operation. calling it outside of postinitialize
 	//or beginplay is not recommended. instead, clients should get a reference
 	//and change what queue they listen on rather than replacing this queue.
-	void DestructiveChangeLocalOutboundQueue(SendQueue NewlyAllocatedQueue); 
+	void DestructiveChangeLocalOutboundQueue(TheCone::SendQueue NewlyAllocatedQueue); 
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -45,7 +45,7 @@ protected:
 	// Receiver information
 
 	FCabling controller_runner;
-	SendQueue GameThreadControlQueue;
-	SendQueue CabledThreadControlQueue;
+	TheCone::SendQueue GameThreadControlQueue;
+	TheCone::SendQueue CabledThreadControlQueue;
 	TUniquePtr<FRunnableThread> controller_thread;
 };
