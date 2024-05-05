@@ -14,8 +14,10 @@ void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	QueueToSend = nullptr;
 	SelfBind = nullptr;
 	DebugSend = nullptr;
-	ConfigVals = GetDefault<UBristleconeConstants>();
+	const UBristleconeConstants* ConfigVals = GetDefault<UBristleconeConstants>();
 	LogOnReceive = ConfigVals->log_receive_c;
+	FString address = ConfigVals->default_address_c.IsEmpty() ? "34.207.0.66" : ConfigVals->default_address_c;
+	sender_runner.AddTargetAddress(address);
 	WakeSender = MakeShareable(FPlatformProcess::GetSynchEventFromPool(true));
 	UE_LOG(LogTemp, Warning, TEXT("BCN will not start unless another subsystem creates and binds queues during PostInitialize."));
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world initialized"));
@@ -34,8 +36,7 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Good bind for send queue."));
 		}
-
-
+		
 		if (!QueueOfReceived.IsValid())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: No bind for received queue. Self-binding for debug."));
@@ -58,13 +59,9 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		socketLow = MakeShareable(socket_factory.Build());
 		socketBackground = MakeShareable(socket_factory.Build());
 
-		//sender_runner.WakeSender = WakeSender;
 		sender_runner.SetWakeSender(WakeSender);
-		//Get config and start sender thread
-		
+		// start sender thread
 		//TODO: refactor this to allow proper data driven construction.
-		FString address = ConfigVals->default_address_c.IsEmpty() ? "34.207.0.66" : ConfigVals->default_address_c;
-		sender_runner.AddTargetAddress(address);
 		sender_runner.BindSource(QueueToSend);
 		sender_runner.SetLocalSockets(socketHigh, socketLow, socketBackground);
 		sender_runner.ActivateDSCP();
@@ -115,7 +112,6 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(sender_socket_obj);
 	}
 
-	ConfigVals = nullptr;
 	FPlatformProcess::ReturnSynchEventToPool(WakeSender.Get());
 	Super::Deinitialize();
 }
