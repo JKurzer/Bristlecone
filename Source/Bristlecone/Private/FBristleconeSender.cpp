@@ -54,6 +54,10 @@ void FBristleconeSender::SetLocalSockets(
 	sender_socket_background = new_socket_adaptive;
 }
 
+void FBristleconeSender::SetWakeSender(const TSharedPtr<FEvent, ESPMode::ThreadSafe>& NewWakeSender) {
+	WakeSender = NewWakeSender;
+}
+
 void FBristleconeSender::ActivateDSCP()
 {
 

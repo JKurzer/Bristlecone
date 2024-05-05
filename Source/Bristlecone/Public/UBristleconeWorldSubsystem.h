@@ -37,11 +37,11 @@ public:
 	// Subsystems should provide allocated queues. Bristlecone only provides for receives,
 	// and will not run if nothing binds the source queue "QueueToSend."
 	// 
-	//Inbound is produced by another subsystem that is responsible for creating and owning the queue lifecycle
-	//It is consumed by the sender thread. Input is expected to be 8 byte packets at 120hz. 
-	//An event is provided, as well, to wake the sender.
-	//Adding more producers WILL cause concurrency bugs immediately.
-	FEvent* WakeSender;
+	// Inbound is produced by another subsystem that is responsible for creating and owning the queue lifecycle
+	// It is consumed by the sender thread. Input is expected to be 8 byte packets at 120hz. 
+	// An event is provided, as well, to wake the sender.
+	// Adding more producers WILL cause concurrency bugs immediately.
+	TSharedPtr<FEvent, ESPMode::ThreadSafe> WakeSender;
 	TheCone::SendQueue QueueToSend;
 	TheCone::SendQueue DebugSend;
 
