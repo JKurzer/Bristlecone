@@ -8,8 +8,8 @@ The core definition of Bristlecone is simple:
 * Bristlecone uses UDP over IPv4. A successor protocol will use either UDP over IPv6 or a raw IPv6 packet.
 * Each Bristlecone datagram schema uses a unique port.
 * Bristlecone datagram schemas are statically sized. As a result, Bristlecone is recommended only for small schemas.
-* The recommended Bristlecone datagram sizes are 8, 16, 24, and 32 bytes.
-* Each complete Bristlecone packet contains only one datagram schema, **but** unusually contains multiple datagrams.
+* The recommended Bristlecone datagram sizes are 8, 16, 24, and 32 bytes. A special provision is made for 128b datagrams called "flats."
+* Each complete Bristlecone packet contains only one datagram schema, **but** unusually contains multiple datagrams, with the exception of "flats."
 * Each packet contains the current datagram and the previous two.
 * In other words, a Bristlecone packet is the current datagram, the previously transmitted datagram of that type, and the one before that.
 * This is commonly called windowing, though that term is overloaded, so it could be said that a bristlecone packet has a window of three.
@@ -22,7 +22,7 @@ The core definition of Bristlecone is simple:
   * That time isn't today.
 * A bristlecone packet's payload of 3 datagrams is called a clone.
 * Bristlecone transmits between 1 and 3 instances of each packet's payload, hence why we call them clones, depending on ECN.
-* The default is 2 clones per set, which we'll call a clone set.
+* The default is 3 clones per set, which we'll call a clone set.
 * These clone sets are transmitted as fast as possible, with the goal that all copies in a cloneset be in-flight simultaneously.
   * In practice, adding a small delay may be useful.
   * We very strongly recommend that any added delays be one millisecond or less between clones in a set.
