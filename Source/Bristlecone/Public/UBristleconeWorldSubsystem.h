@@ -41,7 +41,7 @@ public:
 	// It is consumed by the sender thread. Input is expected to be 8 byte packets at 120hz. 
 	// An event is provided, as well, to wake the sender.
 	// Adding more producers WILL cause concurrency bugs immediately.
-	TSharedPtr<FEvent, ESPMode::ThreadSafe> WakeSender;
+	FSharedEventRef WakeSender; //DO NOT USE AN INFINITE WAIT ON THIS. IT IS NOT EVER SAFE TO USE INFINITE WAITS ON FEVENTS.
 	TheCone::SendQueue QueueToSend;
 	TheCone::SendQueue DebugSend;
 

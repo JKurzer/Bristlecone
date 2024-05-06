@@ -16,7 +16,6 @@ void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	DebugSend = nullptr;
 	ConfigVals = GetDefault<UBristleconeConstants>();
 	LogOnReceive = ConfigVals->log_receive_c;
-	WakeSender = MakeShareable(FPlatformProcess::GetSynchEventFromPool(true));
 	UE_LOG(LogTemp, Warning, TEXT("BCN will not start unless another subsystem creates and binds queues during PostInitialize."));
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world initialized"));
 }
@@ -82,7 +81,8 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Deinitializing Bristlecone subsystem"));
 	
 	if (sender_thread) {
-		sender_thread->Kill();
+		sender_runner.Stop();
+		WakeSender->Trigger();
 	}
 	if (receiver_thread) {
 		receiver_thread->Kill();
@@ -116,7 +116,6 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 	}
 
 	ConfigVals = nullptr;
-	FPlatformProcess::ReturnSynchEventToPool(WakeSender.Get());
 	Super::Deinitialize();
 }
 

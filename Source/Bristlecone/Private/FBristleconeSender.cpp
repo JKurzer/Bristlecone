@@ -54,7 +54,7 @@ void FBristleconeSender::SetLocalSockets(
 	sender_socket_background = new_socket_adaptive;
 }
 
-void FBristleconeSender::SetWakeSender(const TSharedPtr<FEvent, ESPMode::ThreadSafe>& NewWakeSender) {
+void FBristleconeSender::SetWakeSender(FSharedEventRef NewWakeSender) {
 	WakeSender = NewWakeSender;
 }
 
@@ -175,11 +175,13 @@ uint32 FBristleconeSender::Run() {
 
 void FBristleconeSender::Exit() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Sender: Exiting Bristlecone sender thread."));
+	running = false;
 	Cleanup();
 }
 
 void FBristleconeSender::Stop() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Sender: Stopping Bristlecone sender thread."));
+	running = false;
 	Cleanup();
 }
 
