@@ -39,6 +39,11 @@ public class Bristlecone : ModuleRules
 
     public Bristlecone(ReadOnlyTargetRules Target) : base(Target)
     {
+        PublicIncludePaths.AddRange(
+            new string[] {
+                Path.Combine(PluginDirectory,"Source/Bristlecone")
+            }
+        );
         bool bHasGameInputSupport = HasGameInputSupport(Target);
         System.Console.WriteLine("Known support: " + bHasGameInputSupport);
         string gdkpath = Path.Combine(PluginDirectory, "GDKDependency", "GameKit", "Include");

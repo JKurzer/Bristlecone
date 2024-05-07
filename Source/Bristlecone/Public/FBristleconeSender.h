@@ -1,7 +1,10 @@
 ﻿#pragma once
 #include "FBristleconePacket.h"
+#include "CoreMinimal.h"
+#include "HAL/Runnable.h"
 #include "FControllerState.h"
 #include "Interfaces/IPv4/IPv4Endpoint.h"
+
 #include "BristleconeCommonTypes.h"
 
 

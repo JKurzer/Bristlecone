@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "Interfaces/IPv4/IPv4Endpoint.h"
+#include "CoreMinimal.h"
+#include "HAL/Runnable.h"
 #include "FControllerState.h"
 #include "SocketSubsystem.h"
 #include "Common/UdpSocketBuilder.h"
