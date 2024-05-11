@@ -75,7 +75,7 @@ uint32 FBristleconeReceiver::Run() {
 
 		receiver_socket.IsValid() ? receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f) : 0;
 	}
-	
+	receiver_socket = nullptr;//revise this, it's not super safe even with threadsafe smart pointers, but it'll hold for now.
 	return 0;
 }
 
@@ -90,7 +90,6 @@ void FBristleconeReceiver::Stop() {
 }
 
 void FBristleconeReceiver::Cleanup() {
-	receiver_socket = nullptr;
 	const ISocketSubsystem* socket_subsystem_obj = socket_subsystem.Release();
 	if (socket_subsystem_obj != nullptr) {
 		socket_subsystem_obj = nullptr;
