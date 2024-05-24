@@ -12,7 +12,7 @@ public:
 	FBristleconeReceiver();
 
 	void BindSink(TheCone::RecvQueue QueueCandidate);
-
+	void BindStatsSink(TheCone::TimestampQueue QueueCandidate);
 	virtual ~FBristleconeReceiver() override;
 
 	void SetLocalSocket(const TSharedPtr<FSocket, ESPMode::ThreadSafe>& new_socket);
@@ -33,6 +33,7 @@ private:
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> receiver_socket;
 	TArray<uint8> received_data;
 	TheCone::RecvQueue Queue;
+	TheCone::TimestampQueue PacketStats;
 	TheCone::CycleTracking MySeen;
 	TUniquePtr<ISocketSubsystem> socket_subsystem;
 	bool running;

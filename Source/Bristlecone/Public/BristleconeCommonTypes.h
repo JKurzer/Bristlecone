@@ -15,9 +15,12 @@
 namespace TheCone {
 	typedef uint64_t PacketElement;
 	typedef FBristleconePacket<PacketElement, 3> Packet_tpl;
+	typedef std::pair<uint32_t, long> CycleTimestamp;
 	typedef TCircularQueue<Packet_tpl> PacketQ;
 	typedef TCircularQueue<PacketElement> IncQ;
+	typedef TCircularQueue<CycleTimestamp> TimestampQ;
 	typedef TSharedPtr<PacketQ, ESPMode::ThreadSafe> RecvQueue; // it is the default, but let's be explicit.
+	typedef TSharedPtr<TimestampQ, ESPMode::ThreadSafe> TimestampQueue;
 	typedef TSharedPtr<TCircularQueue<PacketElement>, ESPMode::ThreadSafe> SendQueue; // note that the queues only support 1p1c mode.
 	typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
 

@@ -12,6 +12,11 @@ void FBristleconeReceiver::BindSink(TheCone::RecvQueue QueueCandidate)
 	Queue = QueueCandidate;
 }
 
+void FBristleconeReceiver::BindStatsSink(TheCone::TimestampQueue QueueCandidate)
+{
+	PacketStats.Reset();
+	PacketStats = QueueCandidate;
+}
 
 FBristleconeReceiver::~FBristleconeReceiver() {
 	UE_LOG(LogTemp, Display, TEXT("Bristlecone:Receiver: Destructing Bristlecone Receiver"));
@@ -67,10 +72,12 @@ uint32 FBristleconeReceiver::Run() {
 			if (LogOnReceive)
 			{
 				uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
-				UE_LOG(LogTemp, Warning, TEXT("Cycle %ld rtt: %ld"), receiving_state.GetCycleMeta(), lsbTime - receiving_state.GetTransferTime());
+				TheCone::CycleTimestamp v = TheCone::CycleTimestamp(lsbTime - receiving_state.GetTransferTime(), receiving_state.GetCycleMeta());
+				PacketStats->Enqueue(v); // p sure this doesn't leak memory? @Eliza, TODO: please sanity check me?
 			}
 			Queue.Get()->Enqueue(receiving_state);//this actually provokes a copy, which can be removed, I think, by not doing the mcpy
 			
+
 		}
 
 		receiver_socket.IsValid() ? receiver_socket.Get()->Wait(ESocketWaitConditions::WaitForRead, 0.01f) : 0;

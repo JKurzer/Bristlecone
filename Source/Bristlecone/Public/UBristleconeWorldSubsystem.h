@@ -48,10 +48,12 @@ public:
 	//Again, only 1p1c patterns are supported by this lockless design. The receiver waits on its socket, not this queue.
 	TheCone::RecvQueue QueueOfReceived;
 	TheCone::RecvQueue SelfBind;
+	TheCone::TimestampQueue ReceiveTimes;
 	bool LogOnReceive;
 
   private:
 	FIPv4Endpoint local_endpoint;
+	double logTicker = 0;
 
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketHigh;
 	TSharedPtr<FSocket, ESPMode::ThreadSafe> socketLow;

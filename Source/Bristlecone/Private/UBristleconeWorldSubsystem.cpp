@@ -12,6 +12,7 @@ void UBristleconeWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Inbound and Outbound Queues set to null."));
 	QueueOfReceived = nullptr;
 	QueueToSend = nullptr;
+	ReceiveTimes = nullptr;
 	SelfBind = nullptr;
 	DebugSend = nullptr;
 	//TODO @maslabgamer: does this leak memory?
@@ -68,9 +69,12 @@ void UBristleconeWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld) {
 		sender_thread.Reset(FRunnableThread::Create(&sender_runner, TEXT("Bristlecone.Sender")));
 
 		// Start receiver thread
+		ReceiveTimes = MakeShareable(new TheCone::TimestampQ(140));
+		receiver_runner.BindStatsSink(ReceiveTimes);
 		receiver_runner.LogOnReceive = LogOnReceive;
 		receiver_runner.SetLocalSocket(socketHigh);
 		receiver_runner.BindSink(QueueOfReceived);
+
 		receiver_thread.Reset(FRunnableThread::Create(&receiver_runner, TEXT("Bristlecone.Receiver")));
 	}
 }
@@ -117,7 +121,7 @@ void UBristleconeWorldSubsystem::Deinitialize() {
 
 void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
+	++logTicker;
 	if (DebugSend.IsValid())
 	{
 		for (int i = 0; i < 50; ++i)
@@ -137,6 +141,22 @@ void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 				UE_LOG(LogTemp, Warning, TEXT("Bristlecone: With UE Frame Latency, %ld, %ld"), lsbTime - current->GetTransferTime(), current->GetCycleMeta());
 			}
 			SelfBind->Dequeue();
+		}
+	}
+	if (logTicker >= 30)
+	{
+		logTicker = 0;
+		if (LogOnReceive)
+		{
+			double sum = 0;
+			double sent = 0;
+			while (ReceiveTimes != nullptr && ReceiveTimes->IsEmpty() != true)
+			{
+				++sent;
+				sum += ReceiveTimes->Peek()->first;
+				ReceiveTimes->Dequeue();
+			}
+			UE_LOG(LogTemp, Warning, TEXT("Bristlecone: Average Latency, %lf for %lf packets"), (sum / sent), sent);
 		}
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("Bristlecone:Subsystem: Subsystem world ticked"));
