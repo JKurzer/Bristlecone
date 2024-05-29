@@ -25,7 +25,7 @@ protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
-	
+
 	virtual void Tick(float DeltaTime) override;
 	virtual TStatId GetStatId() const override;
 
@@ -50,6 +50,17 @@ public:
 	TheCone::RecvQueue SelfBind;
 	TheCone::TimestampQueue ReceiveTimes;
 	bool LogOnReceive;
+
+	//This will grant access to the bristlecone synchronized time, and provides a lockless timestamp. that's as dangerous as it sounds
+	//so normally, we do not recommend using it directly. instead, use artillery's now, where protections will gradually accumulate.
+	uint32_t Now()
+	{
+#if UE_BUILD_SHIPPING
+		UE_LOG(LogTemp, Error, TEXT("Timekeeping unimplemented!!!! Unfinished bristlecone made into a shipped build."));
+		throw();// IF I SEE THIS, I SHIPPED WITHOUT ADDING TIMEKEEPING. SHAME ON YOU, Jake.
+#endif
+		return 0xDEADBEEF;
+	};
 
   private:
 	FIPv4Endpoint local_endpoint;
