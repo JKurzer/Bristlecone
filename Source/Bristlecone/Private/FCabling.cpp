@@ -48,13 +48,31 @@ uint32 FCabling::Run() {
 
 	//We're using the GameInput lib.
 	//https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/input/overviews/input-overview
+	//https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/input/advanced/input-keyboard-mouse will be fun
+	/*
+	* 
+	* Per the docs:
+	Rather than using GetNextReading to walk through potentially dozens of historical mouse readings and 
+	adding up the deltas, they're accumulated into a virtual positionX and positionY value. From there,
+	deltas are calculated by subtracting the positionX and positionY value from the previous readings that 
+	were obtained. Individual deltas are accessible when iterating through all intermediate readings, or
+	through the accumulated deltas when intermediate readings have been skipped.
+	
+	The positionX and positionY values are the sum of all movement deltas.
+	These values don't correlate with screen-space coordinates in any way. 
+	The accumulated delta value is only for the mouse events that a process receives while it has input focus.
+	*/
+
+	//https://handmade.network/forums/t/8710-using_microsoft_gameinput_api_with_multiple_controllers#29361
+	//Looks like PS4/PS5 won't be too bad, just gotta watch out for Fun Device ID changes.
 	while (running)
 	{
 		if ((lastPoll + periodInNano) <= lsbTime)
 		{
+
+			lastPoll = lsbTime;
 			if (SUCCEEDED(g_gameInput->GetCurrentReading(GameInputKindGamepad, g_gamepad, &reading)))
 			{
-				lastPoll = lsbTime;
 				// If no device has been assigned to g_gamepad yet, set it
 				// to the first device we receive input from. (This must be
 				// the one the player is using because it's generating input.)
