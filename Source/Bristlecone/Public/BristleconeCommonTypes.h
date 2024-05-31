@@ -23,6 +23,7 @@ namespace TheCone {
 	typedef TSharedPtr<TimestampQ, ESPMode::ThreadSafe> TimestampQueue;
 	typedef TSharedPtr<TCircularQueue<PacketElement>, ESPMode::ThreadSafe> SendQueue; // note that the queues only support 1p1c mode.
 	typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
+	constexpr uint32_t LongboySendHertz = 120;
 
 	//this crashes in prod. it is intended ONLY for use during mock out of your session system.
 	//I do not know how yours will work, but I needed this during the build out of mine.
