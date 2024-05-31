@@ -38,8 +38,8 @@ uint32 FCabling::Run() {
 	uint64_t currentRead = 0;
 	//Hi! Jake here! Reminding you that this will CYCLE every some milliseconds.
 	//That's known. Isn't that fun? :) Don't reorder these, by the way.
-	uint32_t lastPollTime = (std::chrono::steady_clock::now().time_since_epoch().count()) & 0x00000000FFFFFFFF;
-	uint32_t lsbTime = (std::chrono::steady_clock::now().time_since_epoch().count()) & 0x00000000FFFFFFFF;
+	uint32_t lastPollTime = getSlicedMicrosecondNow();
+	uint32_t lsbTime = getSlicedMicrosecondNow();
 	constexpr uint32_t sampleHertz = 512;
 	constexpr uint32_t sendHertz = 70;
 	constexpr uint32_t sendHertzFactor = sampleHertz/sendHertz;
@@ -153,7 +153,7 @@ uint32 FCabling::Run() {
 		// this is technically a kind of spin lock,
 		// checking the steady clock is actually quite a long operation
 		std::this_thread::yield(); // but this gets... weird.
-		lsbTime = std::chrono::steady_clock::now().time_since_epoch().count() & 0x00000000FFFFFFFF;
+		lsbTime = getSlicedMicrosecondNow();
 		
 		if (lsbTime < lastPollTime)
 		{
