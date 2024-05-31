@@ -37,9 +37,9 @@ uint32 FCabling::Run() {
 	uint64_t priorReading = 0;
 	uint64_t currentRead = 0;
 	//Hi! Jake here! Reminding you that this will CYCLE every some milliseconds.
-	//That's known. Isn't that fun? :) 
-	uint32_t lsbTime = 0x00000000FFFFFFFF & (std::chrono::steady_clock::now().time_since_epoch().count());
-	uint32_t lastPoll = 0;
+	//That's known. Isn't that fun? :) Don't reorder these, by the way.
+	uint32_t lastPollTime = (std::chrono::steady_clock::now().time_since_epoch().count()) & 0x00000000FFFFFFFF;
+	uint32_t lsbTime = (std::chrono::steady_clock::now().time_since_epoch().count()) & 0x00000000FFFFFFFF;
 	constexpr uint32_t sampleHertz = 512;
 	constexpr uint32_t sendHertz = 70;
 	constexpr uint32_t sendHertzFactor = sampleHertz/sendHertz;
@@ -67,10 +67,10 @@ uint32 FCabling::Run() {
 	//Looks like PS4/PS5 won't be too bad, just gotta watch out for Fun Device ID changes.
 	while (running)
 	{
-		if ((lastPoll + periodInNano) <= lsbTime)
+		if ((lastPollTime + periodInNano) <= lsbTime)
 		{
 
-			lastPoll = lsbTime;
+			lastPollTime = lsbTime;
 			if (SUCCEEDED(g_gameInput->GetCurrentReading(GameInputKindGamepad, g_gamepad, &reading)))
 			{
 				// If no device has been assigned to g_gamepad yet, set it
@@ -134,18 +134,10 @@ uint32 FCabling::Run() {
 				g_gamepad = nullptr;
 			}
 
-			//if this is the case, we've looped round. rather than verifying, we'll just miss one chance to poll.
-			//sequence number is still the actual arbiter, so we'll only send every 4 periods, even if we poll
-			//one less or one more time.
-			if (lsbTime < lastPoll)
-			{
-				lastPoll = 0;
-			}
-
 			if ((seqNumber % sampleHertz) == 0)
 			{
 				long long now = std::chrono::steady_clock::now().time_since_epoch().count();
-				UE_LOG(LogTemp, Display, TEXT("Cabling hertz cycled: %lld"), (now / 1000000000));
+				UE_LOG(LogTemp, Display, TEXT("Cabling hertz cycled: %lld against lsb %lld with last poll as %lld"), (now), lsbTime, lastPollTime);
 			}
 
 			if ((seqNumber % sendHertzFactor) == 0)
@@ -154,10 +146,19 @@ uint32 FCabling::Run() {
 			}
 			++seqNumber;
 		}
+		//if this is the case, we've looped round. rather than verifying, we'll just miss one chance to poll.
+		//sequence number is still the actual arbiter, so we'll only send every 4 periods, even if we poll
+		//one less or one more time.
+
 		// this is technically a kind of spin lock,
 		// checking the steady clock is actually quite a long operation
 		std::this_thread::yield(); // but this gets... weird.
-		lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
+		lsbTime = std::chrono::steady_clock::now().time_since_epoch().count() & 0x00000000FFFFFFFF;
+		
+		if (lsbTime < lastPollTime)
+		{
+			lastPollTime = lsbTime;
+		}
 	}
 	if (g_gamepad) g_gamepad->Release();
 	if (g_gameInput) g_gameInput->Release();
