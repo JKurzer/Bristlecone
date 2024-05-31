@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "FBristleconePacket.h"
 
+#include "UnsignedNarrowTime.h"
 #include "FControllerState.h"
 #include "Containers/CircularQueue.h"
 #include <cstdint>
@@ -24,6 +25,8 @@ namespace TheCone {
 	typedef TSharedPtr<TCircularQueue<PacketElement>, ESPMode::ThreadSafe> SendQueue; // note that the queues only support 1p1c mode.
 	typedef FBristleconePacket<FControllerState, 3> FControllerStatePacket;
 	constexpr uint32_t LongboySendHertz = 120;
+	constexpr uint32_t CablingSampleHertz = 512;
+	constexpr uint32_t BristleconeSendHertz = 70;
 
 	//this crashes in prod. it is intended ONLY for use during mock out of your session system.
 	//I do not know how yours will work, but I needed this during the build out of mine.

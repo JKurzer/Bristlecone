@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <chrono>
+#include "UnsignedNarrowTime.h"
 
 template<
 	typename CLONE_TYPE,
@@ -69,7 +70,7 @@ public:
 	}
 	
 	void UpdateTransferTime() {
-		transfer_time = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
+		transfer_time = NarrowClock::getSlicedMicrosecondNow();
 	}
 
 	long GetCycleMeta() const {

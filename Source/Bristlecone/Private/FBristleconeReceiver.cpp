@@ -71,7 +71,7 @@ uint32 FBristleconeReceiver::Run() {
 			}
 			if (LogOnReceive)
 			{
-				uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
+				uint32_t lsbTime = NarrowClock::getSlicedMicrosecondNow();;
 				TheCone::CycleTimestamp v = TheCone::CycleTimestamp(lsbTime - receiving_state.GetTransferTime(), receiving_state.GetCycleMeta());
 				PacketStats->Enqueue(v); // p sure this doesn't leak memory? @Eliza, TODO: please sanity check me?
 			}

@@ -137,7 +137,7 @@ void UBristleconeWorldSubsystem::Tick(float DeltaTime) {
 			const TheCone::Packet_tpl* current = SelfBind->Peek();
 			if (LogOnReceive)
 			{
-				uint32_t lsbTime = 0x00000000FFFFFFFF & std::chrono::steady_clock::now().time_since_epoch().count();
+				uint32_t lsbTime = NarrowClock::getSlicedMicrosecondNow();
 				UE_LOG(LogTemp, Warning, TEXT("Bristlecone: With UE Frame Latency, %ld, %ld"), lsbTime - current->GetTransferTime(), current->GetCycleMeta());
 			}
 			SelfBind->Dequeue();

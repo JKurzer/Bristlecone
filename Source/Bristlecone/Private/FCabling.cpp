@@ -36,14 +36,14 @@ uint32 FCabling::Run() {
 	int seqNumber = 0;
 	uint64_t priorReading = 0;
 	uint64_t currentRead = 0;
-	//Hi! Jake here! Reminding you that this will CYCLE every some milliseconds.
+	//Hi! Jake here! Reminding you that this will CYCLE
 	//That's known. Isn't that fun? :) Don't reorder these, by the way.
-	uint32_t lastPollTime = getSlicedMicrosecondNow();
-	uint32_t lsbTime = getSlicedMicrosecondNow();
-	constexpr uint32_t sampleHertz = 512;
-	constexpr uint32_t sendHertz = 70;
-	constexpr uint32_t sendHertzFactor = sampleHertz/sendHertz;
-	constexpr uint32_t periodInNano = 1000000000 / sampleHertz;
+	uint32_t lastPollTime = NarrowClock::getSlicedMicrosecondNow();
+	uint32_t lsbTime = NarrowClock::getSlicedMicrosecondNow();
+	constexpr uint32_t sampleHertz = TheCone::CablingSampleHertz;
+	constexpr uint32_t sendHertz = TheCone::BristleconeSendHertz;
+	constexpr uint32_t sendHertzFactor = sampleHertz/sendHertz; 
+	constexpr uint32_t periodInNano = 1000000 / sampleHertz; //swap to microseconds. standardizing.
 
 
 	//We're using the GameInput lib.
@@ -153,7 +153,7 @@ uint32 FCabling::Run() {
 		// this is technically a kind of spin lock,
 		// checking the steady clock is actually quite a long operation
 		std::this_thread::yield(); // but this gets... weird.
-		lsbTime = getSlicedMicrosecondNow();
+		lsbTime = NarrowClock::getSlicedMicrosecondNow();
 		
 		if (lsbTime < lastPollTime)
 		{
