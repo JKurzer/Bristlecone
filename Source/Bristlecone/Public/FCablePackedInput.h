@@ -143,10 +143,10 @@ public:
 		float floatValue = FCableInputPacker::FastLookup(abs(intValue));
 		return intValue >= 0 ? floatValue : (-floatValue);
 	}
-
+	
 	static float FastLookup(uint32 axis)
 	{
-	static const float lookup[1025] = {
+	static constexpr float lookup[1025] = {
 	0,
 0.0009765625,
 0.001953125,

@@ -59,7 +59,7 @@ public:
 		UE_LOG(LogTemp, Error, TEXT("Timekeeping unimplemented!!!! Unfinished bristlecone made into a shipped build."));
 		throw();// IF I SEE THIS, I SHIPPED WITHOUT ADDING TIMEKEEPING. SHAME ON YOU, Jake.
 #endif
-		return 0xDEADBEEF;
+		return NarrowClock::getSlicedMicrosecondNow();
 	};
 
   private:
