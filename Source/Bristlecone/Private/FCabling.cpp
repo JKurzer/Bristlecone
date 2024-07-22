@@ -33,6 +33,7 @@ uint32 FCabling::Run() {
 	IGameInputDevice* g_gamepad = nullptr;
 	IGameInputReading* reading;
 	bool sent = false;
+	//TODO: this is gonna be a problem too. Maybe. I don't think but maybe.
 	int seqNumber = 0;
 	uint64_t priorReading = 0;
 	uint64_t currentRead = 0;
@@ -116,6 +117,7 @@ uint32 FCabling::Run() {
 					//excising some amount of jitter. Because we always round down, you have to move
 					//fully to a new position and this seems to be a larger delta than the average
 					//heart-rate jitter or control noise.
+					//TODO: this line might actually be wrong. I just redid the math, and it looks right but...
 					if ((seqNumber % sendHertzFactor) == 0 || (currentRead != priorReading))
 					{
 						//push to both queues.
