@@ -33,7 +33,8 @@ uint32 FCabling::Run() {
 	IGameInputDevice* g_gamepad = nullptr;
 	IGameInputReading* reading;
 	bool sent = false;
-	//TODO: this is gonna be a problem too. Maybe. I don't think but maybe.
+	//TODO: why does this seem to need to be an int? I'm assuming something about type 64/32 coercion or
+	//the mod operator is that I knew when I wrote this code, but I no longer remember and it should get a docs note.
 	int seqNumber = 0;
 	uint64_t priorReading = 0;
 	uint64_t currentRead = 0;
