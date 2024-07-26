@@ -72,14 +72,15 @@ uint32 FCabling::Run() {
 		if ((lastPollTime + periodInNano) <= lsbTime)
 		{
 
+
 			lastPollTime = lsbTime;
-			if (SUCCEEDED(g_gameInput->GetCurrentReading(GameInputKindGamepad, g_gamepad, &reading)))
+			if (g_gameInput && SUCCEEDED(g_gameInput->GetCurrentReading(GameInputKindGamepad, g_gamepad, &reading)))
 			{
+
 				// If no device has been assigned to g_gamepad yet, set it
 				// to the first device we receive input from. (This must be
 				// the one the player is using because it's generating input.)
 				if (!g_gamepad) reading->GetDevice(&g_gamepad);
-
 				// Retrieve the fixed-format gamepad state from the reading.
 				GameInputGamepadState state;
 				//This is a struct of form:
